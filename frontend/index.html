@@ -1,0 +1,2108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoría de Cálculo</title>
+<meta name="description" content="Monitoría de Cálculo Diferencial e Integral: fundamentos teóricos, ejercicios resueltos y graficadores interactivos 2D y 3D.">
+<meta name="author" content="Iván Darío Marchena Salgado">
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#172033; --muted:#5d6782; --line:#e1e6f0;
+  --accent:#4f46e5; --accent-2:#0ea5e9; --accent-soft:#eceafe; --ok:#047857; --ok-soft:#dcfce9;
+  --warn:#b45309; --warn-soft:#fff3d6;
+  --canvas:#eef2fa; --chip:#eef1f8;
+  --c-dif:#e11d74; --c-dif-soft:#fde7f1;
+  --c-int:#0d9488; --c-int-soft:#d9f6f1;
+  --c-disc:#2563eb; --c-disc-soft:#e3ecff;
+  --c-aran:#9333ea; --c-aran-soft:#f2e6fe;
+  --c-capa:#059669; --c-capa-soft:#dcf7ec;
+  --c-gold:#d97706; --c-gold-soft:#fef1d9;
+  --grad:linear-gradient(120deg,#4f46e5 0%,#7c3aed 45%,#0ea5e9 100%);
+  --shadow:0 1px 2px rgba(23,32,51,.05),0 8px 24px -12px rgba(79,70,229,.22);
+  --foot:#0f1430; --foot-ink:#dfe3f5;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c0f1d; --card:#151a2e; --ink:#e8ebf7; --muted:#9aa3c0; --line:#262d48;
+    --accent:#8b83ff; --accent-2:#38bdf8; --accent-soft:#232250; --ok:#4ade80; --ok-soft:#10301f;
+    --warn:#fbbf24; --warn-soft:#352810;
+    --canvas:#0a0d19; --chip:#1f2540;
+    --c-dif:#f472b6; --c-dif-soft:#3a1630;
+    --c-int:#2dd4bf; --c-int-soft:#0f312e;
+    --c-disc:#60a5fa; --c-disc-soft:#16264a;
+    --c-aran:#c084fc; --c-aran-soft:#2b1846;
+    --c-capa:#34d399; --c-capa-soft:#0f3226;
+    --c-gold:#fbbf24; --c-gold-soft:#33260c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -14px rgba(0,0,0,.7);
+    --foot:#070a16; --foot-ink:#c9cfe8;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c0f1d; --card:#151a2e; --ink:#e8ebf7; --muted:#9aa3c0; --line:#262d48;
+  --accent:#8b83ff; --accent-2:#38bdf8; --accent-soft:#232250; --ok:#4ade80; --ok-soft:#10301f;
+  --warn:#fbbf24; --warn-soft:#352810;
+  --canvas:#0a0d19; --chip:#1f2540;
+  --c-dif:#f472b6; --c-dif-soft:#3a1630;
+  --c-int:#2dd4bf; --c-int-soft:#0f312e;
+  --c-disc:#60a5fa; --c-disc-soft:#16264a;
+  --c-aran:#c084fc; --c-aran-soft:#2b1846;
+  --c-capa:#34d399; --c-capa-soft:#0f3226;
+  --c-gold:#fbbf24; --c-gold-soft:#33260c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -14px rgba(0,0,0,.7);
+  --foot:#070a16; --foot-ink:#c9cfe8;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+h1,h2,h3,h4,.brand{font-family:"Poppins","Inter",system-ui,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 16px 10px;max-width:1200px;margin:0 auto}
+header h1{margin:0 0 4px;font-size:24px}
+header p{margin:0;color:var(--muted)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+.layout{max-width:1200px;margin:0 auto;padding:12px 16px 40px;display:grid;grid-template-columns:200px 1fr;gap:18px}
+nav{display:flex;flex-direction:column;gap:6px;position:sticky;top:12px;align-self:start;max-height:calc(100vh - 24px);overflow:auto}
+nav button{all:unset;cursor:pointer;padding:8px 10px;border-radius:8px;background:var(--chip);font-size:14px;display:flex;justify-content:space-between;gap:8px}
+nav button small{color:var(--muted)}
+nav button.on{background:var(--grad);color:#fff}
+nav button.on small{color:#ffffffcc}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;min-width:0;margin-top:16px;box-shadow:var(--shadow)}
+.tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:600;margin-right:6px}
+#tagAxis{background:var(--c-dif-soft);color:var(--c-dif)}
+h2{margin:6px 0 8px;font-size:20px}
+.theory h2{font-size:21px;border-bottom:2px solid transparent;border-image:var(--grad) 1;padding-bottom:8px;margin-top:4px}
+.theory{border-top:4px solid var(--accent)}
+#discos{border-top-color:var(--c-disc)}#arandelas{border-top-color:var(--c-aran)}#capas{border-top-color:var(--c-capa)}#elegir{border-top-color:var(--c-gold)}#pappus{border-top-color:var(--c-dif)}
+#discos h2{color:var(--c-disc)}#arandelas h2{color:var(--c-aran)}#capas h2{color:var(--c-capa)}
+.theory h4{margin:16px 0 4px;font-size:15px}
+.enun{margin:0 0 14px}
+/* índice */
+.toc ol{margin:6px 0 0;padding-left:22px}
+.toc li{margin:3px 0}
+.toc .probs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;padding:0;list-style:none}
+.toc .probs a{display:inline-block;padding:3px 9px;border-radius:7px;background:var(--chip);text-decoration:none;color:var(--ink);font-size:13px}
+.toc .probs a b{color:var(--muted);font-weight:500}
+/* teoría */
+.grid2{display:grid;grid-template-columns:1fr 330px;gap:18px;align-items:start}
+.grid2 svg{width:100%;height:auto;background:var(--canvas);border-radius:10px}
+.formula{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;margin:12px 0;overflow-x:auto}
+#discos .formula{background:var(--c-disc-soft);border-left-color:var(--c-disc)}#arandelas .formula{background:var(--c-aran-soft);border-left-color:var(--c-aran)}#capas .formula{background:var(--c-capa-soft);border-left-color:var(--c-capa)}
+.warn{background:var(--warn-soft);color:var(--warn);border-left:4px solid var(--warn);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:14px}
+table.cmp{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.cmp th{background:var(--accent-soft);color:var(--accent)}
+.tblwrap{overflow-x:auto}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .ax{stroke:#e5484d;stroke-width:2.5}
+svg .reg{fill:#f2a93b;opacity:.35}
+svg .cur{stroke:#d9861a;stroke-width:2.5;fill:none}
+svg .rc{fill:#38c793;stroke:#1f8a5e}
+svg .sol{stroke:#4f8cff;stroke-width:2;fill:#4f8cff;fill-opacity:.15}
+svg .dim{stroke:var(--muted);stroke-width:1.3;fill:none}
+svg .co{stroke:var(--muted);stroke-width:1}
+/* visor */
+#viewer{position:relative;width:100%;height:440px;border-radius:12px;overflow:hidden;background:var(--canvas)}
+#viewer canvas{display:block}
+#hud{position:absolute;left:10px;top:10px;font:13px ui-monospace,Consolas,monospace;background:#00000088;color:#fff;padding:6px 9px;border-radius:8px;pointer-events:none;line-height:1.5}
+#legend{position:absolute;right:10px;bottom:10px;font-size:12px;background:#00000088;color:#fff;padding:6px 9px;border-radius:8px;pointer-events:none}
+#legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 8px;vertical-align:-1px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:12px 0 4px}
+.controls button{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:8px 15px;font:inherit;font-weight:600;cursor:pointer}
+.controls button.sec{background:var(--chip);color:var(--ink)}
+.controls label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+.controls input[type=range]{width:120px}
+.steps{margin:10px 0 0;padding-left:22px}
+.steps li{margin:12px 0;overflow-x:auto;overflow-y:hidden}
+.steps li b.lab{color:var(--accent);background:var(--accent-soft);padding:1px 8px;border-radius:6px}
+.steps li::marker{color:var(--accent);font-weight:700}
+.steps .katex-display{margin:.5em 0}
+.result{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--ok-soft);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);font-weight:600;overflow-x:auto}
+.result:empty{display:none}
+.check{margin-top:10px;font-size:13px;color:var(--muted)}
+.note{margin-top:10px;font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+h3{font-size:15px;margin:20px 0 0;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+.themebtn{float:right;background:var(--chip);color:var(--ink);border:0;border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
+@media (max-width:760px){
+  .layout{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  nav{flex-direction:row;overflow-x:auto;position:static;max-height:none;padding-bottom:4px}
+  nav button{flex:0 0 auto}
+  nav button small{display:none}
+  #viewer{height:340px}
+}
+/* ===================== MONITORÍA: navegación y laboratorios ===================== */
+.topbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar::after{content:"";display:block;height:3px;background:var(--grad)}
+.topbar .in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:16px;margin-right:auto;display:flex;align-items:center;gap:8px}
+.brand .logo{width:32px;height:32px;border-radius:10px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:17px;box-shadow:0 4px 12px -4px #4f46e5aa}
+.tabs,.subtabs{display:flex;gap:6px;overflow-x:auto;max-width:100%}
+.tabs button,.subtabs button{background:var(--chip);color:var(--ink);border:0;border-radius:99px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+.tabs button.on,.subtabs button.on{background:var(--grad);color:#fff;box-shadow:0 4px 12px -6px #4f46e5}
+.tabs button,.subtabs button{transition:background .2s,transform .15s}.tabs button:hover,.subtabs button:hover{transform:translateY(-1px)}
+.tbtn{background:var(--chip);color:var(--ink);border:0;border-radius:8px;padding:7px 10px;cursor:pointer;font:inherit;font-size:14px}
+.view[hidden],.sub[hidden]{display:none!important}
+.subtabs{max-width:1200px;margin:16px auto 0;padding:0 16px 2px}
+.mz{max-width:1200px;margin:0 auto;padding:0 16px 40px}
+.mz h3,.homev h3{text-transform:none;letter-spacing:0;color:var(--accent);font-size:16px;margin:20px 0 6px}
+.mz .lead,.homev .lead{color:var(--muted);margin:2px 0 0}
+.hero{margin-top:22px;padding:34px 30px;border-radius:20px;background:var(--grad);color:#fff;position:relative;overflow:hidden;box-shadow:0 18px 40px -20px #4f46e5}
+.hero::before{content:"∫ dx  ∑  π  f′(x)  ∞  √  Δ";position:absolute;right:-10px;bottom:-18px;font:700 64px/1 "Poppins",sans-serif;opacity:.12;white-space:nowrap;pointer-events:none}
+.hero h1{font-size:32px;margin:0 0 8px;line-height:1.2}
+.hero .lead{color:#ffffffe0!important;max-width:760px;position:relative}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:14px}
+.cards .card{margin-top:0;display:flex;flex-direction:column;gap:6px}
+.cards .card h2{margin:0;font-size:19px}
+.cards .card.c-dif{border-top:5px solid var(--c-dif)}.cards .card.c-dif h2{color:var(--c-dif)}
+.cards .card.c-int{border-top:5px solid var(--c-int)}.cards .card.c-int h2{color:var(--c-int)}
+.cards .card.c-dif .btn:not(.sec){background:var(--c-dif)}.cards .card.c-int .btn:not(.sec){background:var(--c-int)}
+.cards .card{transition:transform .2s}.cards .card:hover{transform:translateY(-3px)}
+.cards .card ul{margin:2px 0 8px;padding-left:20px;color:var(--muted);font-size:14px}
+.cards .card .btn{margin-top:auto;align-self:flex-start}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:filter .2s,transform .15s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.sec{background:var(--chip);color:var(--ink)}
+.labgrid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start;margin-top:12px}
+.panel{display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,var(--accent-soft),var(--bg) 140px);border:1px solid var(--line);border-radius:14px;padding:16px}
+.panel label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.panel label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:14px}
+.panel input[type=text],.panel select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:14px ui-monospace,Consolas,monospace}
+.panel select{font-family:inherit}
+.panel input[type=range]{width:100%}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.err{color:#e5484d;font-size:13px;min-height:0}
+.err:empty{display:none}
+.plot{width:100%;height:420px;display:block;border-radius:12px;background:var(--canvas);touch-action:none;cursor:grab}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.viewer3{position:relative;width:100%;height:440px;border-radius:12px;overflow:hidden;background:var(--canvas)}
+.viewer3 canvas{display:block}
+.hud2{position:absolute;left:10px;top:10px;font:13px ui-monospace,Consolas,monospace;background:#00000088;color:#fff;padding:6px 9px;border-radius:8px;pointer-events:none;line-height:1.5}
+.legend2{position:absolute;right:10px;bottom:10px;font-size:12px;background:#00000088;color:#fff;padding:6px 9px;border-radius:8px;pointer-events:none}
+.legend2 i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 8px;vertical-align:-1px}
+.syntax{width:100%;border-collapse:collapse;font-size:14px}
+.syntax td,.syntax th{border:1px solid var(--line);padding:6px 9px;text-align:left}
+.syntax th{background:var(--accent-soft);color:var(--accent)}
+.syntax code,.mz code{font-family:ui-monospace,Consolas,monospace;background:var(--chip);padding:1px 5px;border-radius:5px}
+.cmpbox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.cmpbox>div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);font-size:14px}
+.cmpbox b.t{display:block;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.cmpbox .big{font-size:20px;font-weight:700}
+.cmpbox .opt{border-color:var(--ok);background:var(--ok-soft)}
+.cmpbox .opt .big{color:var(--ok)}
+.split2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.split2 .plot{height:320px}
+.dimlist{margin:6px 0 0;padding-left:18px;color:var(--ink)}
+.mz .steps li{overflow-x:auto}
+/* ===================== FOOTER ===================== */
+.site-foot{margin-top:auto;background:var(--foot);color:var(--foot-ink);position:relative}
+.site-foot::before{content:"";display:block;height:4px;background:var(--grad)}
+.site-foot .in{max-width:1200px;margin:0 auto;padding:28px 16px 18px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:24px}
+.site-foot h4{margin:0 0 10px;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:#a5b4fc}
+.site-foot p,.site-foot li{margin:0;font-size:14px;line-height:1.7}
+.site-foot ul{list-style:none;margin:0;padding:0}
+.site-foot a{color:#7dd3fc;text-decoration:none}.site-foot a:hover{text-decoration:underline}
+.site-foot .fbrand{display:flex;align-items:center;gap:10px;font:700 17px "Poppins",sans-serif;color:#fff;margin-bottom:8px}
+.site-foot .fbrand .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center}
+.site-foot .k{color:#94a3c8;display:inline-block;min-width:92px}
+.site-foot .legal{border-top:1px solid #ffffff1a;max-width:1200px;margin:0 auto;padding:14px 16px 22px;font-size:13px;color:#aab3d1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+@media (max-width:760px){.site-foot .in{grid-template-columns:1fr}}
+@media (max-width:860px){
+  .labgrid,.split2,.cmpbox{grid-template-columns:1fr}
+  .hero{padding:26px 20px}.hero::before{font-size:44px}
+  .plot{height:320px}
+  .viewer3{height:340px}
+  .hero h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<!-- ===================== BARRA SUPERIOR ===================== -->
+<div class="topbar"><div class="in">
+  <div class="brand"><span class="logo">∫</span> Monitoría de Cálculo</div>
+  <div class="tabs" id="mainTabs">
+    <button data-go="home">Inicio</button>
+    <button data-go="dif">Cálculo Diferencial</button>
+    <button data-go="int">Cálculo Integral</button>
+  </div>
+  <button class="tbtn" id="themeBtn2" title="Cambiar tema">◐</button>
+</div></div>
+
+<!-- ===================== HOME ===================== -->
+<div class="view homev" id="view-home">
+  <div class="mz">
+    <div class="hero">
+      <h1>Monitoría de Cálculo Diferencial e Integral</h1>
+      <p class="lead">Fundamentos teóricos, ejercicios resueltos y simuladores interactivos. Se ingresa una función arbitraria junto con sus límites de integración o el punto de análisis, y el sistema calcula el resultado y desarrolla el procedimiento analítico completo.</p>
+    </div>
+    <div class="cards">
+      <section class="card c-dif">
+        <h2>Cálculo Diferencial</h2>
+        <ul>
+          <li>Derivada como pendiente: recta tangente y recta normal</li>
+          <li>Graficador: análisis de $f(x)$ en un punto $x_0$</li>
+          <li>Optimización de volúmenes: caja, lata, cilindro y cono inscritos</li>
+          <li>Visor 3D del sólido antes y después de optimizar</li>
+        </ul>
+        <div class="btns"><button class="btn" data-go="dif" data-sub="dif-tan">Tangentes y normales</button><button class="btn sec" data-go="dif" data-sub="dif-opt">Optimización</button></div>
+      </section>
+      <section class="card c-int">
+        <h2>Cálculo Integral</h2>
+        <ul>
+          <li>Área bajo la curva con sumas de Riemann (2D)</li>
+          <li>Área entre curvas, con intersecciones automáticas (2D)</li>
+          <li>Sólidos de revolución con tu propia función (3D)</li>
+          <li>Ejercicio 26 resuelto: 20 problemas con animación</li>
+        </ul>
+        <div class="btns"><button class="btn" data-go="int" data-sub="int-area">Áreas</button><button class="btn sec" data-go="int" data-sub="int-solido">Sólidos 3D</button><button class="btn sec" data-go="int" data-sub="int-solidos">Ejercicio 26</button></div>
+      </section>
+    </div>
+    <section class="card">
+      <h2>Sintaxis de entrada de funciones</h2>
+      <p class="lead" style="margin-bottom:8px">Los graficadores interpretan la notación matemática estándar. La multiplicación puede escribirse de forma implícita, por ejemplo <code>2x</code> o <code>3x^2</code>.</p>
+      <div class="tblwrap"><table class="syntax">
+        <tr><th>Expresión</th><th>Sintaxis</th><th>Expresión</th><th>Sintaxis</th></tr>
+        <tr><td>$x^2$</td><td><code>x^2</code></td><td>$\sqrt{x}$</td><td><code>sqrt(x)</code></td></tr>
+        <tr><td>$\sqrt[3]{x}$</td><td><code>cbrt(x)</code> o <code>x^(1/3)</code></td><td>$\operatorname{sen}x,\ \cos x,\ \tan x$</td><td><code>sen(x)</code>, <code>cos(x)</code>, <code>tan(x)</code></td></tr>
+        <tr><td>$e^x$</td><td><code>e^x</code> o <code>exp(x)</code></td><td>$\ln x$</td><td><code>ln(x)</code></td></tr>
+        <tr><td>$\pi$</td><td><code>pi</code></td><td>$|x|$</td><td><code>abs(x)</code></td></tr>
+        <tr><td>$\dfrac{x+1}{x-2}$</td><td><code>(x+1)/(x-2)</code></td><td>$\arcsin x$</td><td><code>asin(x)</code></td></tr>
+      </table></div>
+      <p class="hint">Los límites y parámetros admiten expresiones, como <code>pi/2</code> o <code>sqrt(3)</code>. En los graficadores 2D, la vista se desplaza arrastrando y la escala se ajusta con la rueda del ratón.</p>
+    </section>
+  </div>
+</div>
+
+<!-- ===================== CÁLCULO DIFERENCIAL ===================== -->
+<div class="view" id="view-dif" hidden>
+  <div class="subtabs" data-view="dif">
+    <button data-sub="dif-tan">Derivada: tangente y normal</button>
+    <button data-sub="dif-opt">Optimización de volúmenes</button>
+  </div>
+
+  <div class="sub mz" id="dif-tan">
+    <section class="card theory">
+      <h2>La derivada como pendiente: recta tangente y recta normal</h2>
+      <div class="grid2">
+        <div>
+          <p>La <b>derivada</b> de $f$ en $x_0$ es la pendiente de la recta tangente a la gráfica en el punto $\big(x_0,f(x_0)\big)$. Se obtiene como el límite de las pendientes de las rectas secantes:</p>
+          <div class="formula">$$f'(x_0)=\lim_{h\to0}\frac{f(x_0+h)-f(x_0)}{h}$$</div>
+          <p>Con la pendiente $m=f'(x_0)$ y el punto $(x_0,y_0)$ se escriben las dos rectas:</p>
+          <div class="formula">$$\text{Tangente: } y-y_0=f'(x_0)(x-x_0)\qquad \text{Normal: } y-y_0=-\frac{1}{f'(x_0)}(x-x_0)$$</div>
+          <p>La <b>recta normal</b> es perpendicular a la tangente en el mismo punto: el producto de sus pendientes es $-1$. Si $f'(x_0)=0$, la tangente es horizontal y la normal es la recta vertical $x=x_0$.</p>
+        </div>
+        <div>
+          <h4>Reglas de derivación más usadas</h4>
+          <div class="tblwrap"><table class="cmp">
+            <tr><td>Potencia</td><td>$(x^n)'=nx^{n-1}$</td></tr>
+            <tr><td>Producto</td><td>$(uv)'=u'v+uv'$</td></tr>
+            <tr><td>Cociente</td><td>$\left(\dfrac uv\right)'=\dfrac{u'v-uv'}{v^2}$</td></tr>
+            <tr><td>Cadena</td><td>$\big(f(g(x))\big)'=f'(g(x))\,g'(x)$</td></tr>
+            <tr><td>Trigonométricas</td><td>$(\operatorname{sen}x)'=\cos x,\ (\cos x)'=-\operatorname{sen}x$</td></tr>
+            <tr><td>Exponencial y log</td><td>$(e^x)'=e^x,\ (\ln x)'=\dfrac1x$</td></tr>
+          </table></div>
+        </div>
+      </div>
+      <h4>Ejemplo</h4>
+      <p>Para $f(x)=x^3-3x+1$ en $x_0=2$: $y_0=8-6+1=3$, $f'(x)=3x^2-3$ y $m=f'(2)=9$. La tangente es $y-3=9(x-2)$, es decir, $y=9x-15$. La normal tiene pendiente $-\tfrac19$: $y-3=-\tfrac19(x-2)$, es decir, $y=-\tfrac19x+\tfrac{29}{9}$. Este ejemplo se encuentra precargado en el graficador.</p>
+    </section>
+    <section class="card">
+      <h2>Graficador de tangentes y normales</h2>
+      <p class="lead">Ingrese $f(x)$ y la abscisa $x_0$. El punto también puede reubicarse haciendo clic sobre la gráfica. Ambos ejes emplean la misma escala, de modo que la perpendicularidad entre tangente y normal se conserva visualmente.</p>
+      <div class="labgrid">
+        <div><canvas class="plot" id="dt-cv"></canvas><div class="hint">Clic: mover el punto · Arrastrar: mover la vista · Rueda: zoom</div></div>
+        <div class="panel">
+          <label>f(x) = <input type="text" id="dt-f" value="x^3-3x+1" spellcheck="false"></label>
+          <label>x₀ = <input type="text" id="dt-x0" value="2"></label>
+          <label>Mover el punto <input type="range" id="dt-sl" min="-10" max="10" step="0.01" value="2"></label>
+          <label class="chk"><input type="checkbox" id="dt-tan" checked> Recta tangente</label>
+          <label class="chk"><input type="checkbox" id="dt-nor" checked> Recta normal</label>
+          <label class="chk"><input type="checkbox" id="dt-der"> Gráfica de f′(x)</label>
+          <label class="chk"><input type="checkbox" id="dt-sec"> Recta secante (definición)</label>
+          <label>h = <b id="dt-hv">1</b><input type="range" id="dt-h" min="0.01" max="3" step="0.01" value="1"></label>
+          <div class="btns"><button class="btn" id="dt-go">Calcular</button><button class="btn sec" id="dt-ex">Ejemplo</button><button class="btn sec" id="dt-fit">Centrar vista</button></div>
+          <div class="err" id="dt-err"></div>
+        </div>
+      </div>
+      <h3>Procedimiento</h3>
+      <ol class="steps" id="dt-steps"></ol>
+      <div class="result" id="dt-res"></div>
+    </section>
+  </div>
+
+  <div class="sub mz" id="dif-opt" hidden>
+    <section class="card theory">
+      <h2>Optimización: volumen máximo</h2>
+      <p>Un problema de optimización consiste en determinar el valor de la variable independiente que hace <b>máxima</b> (o mínima) una función objetivo. En geometría, el caso típico es un sólido sujeto a una restricción (una lámina de dimensiones fijas, una cantidad fija de material o un sólido inscrito en una esfera) cuyo <b>volumen máximo</b> se desea determinar.</p>
+      <h4>Procedimiento</h4>
+      <ol>
+        <li><b>Representación gráfica y definición de variables</b> (largo, ancho, alto, radio, etc.).</li>
+        <li><b>Planteamiento de la restricción</b> que relaciona las variables (perímetro, área de material, teorema de Pitágoras en la esfera, etc.).</li>
+        <li><b>Expresión de la función objetivo en una sola variable</b>, $V(x)$, despejando las demás variables a partir de la restricción.</li>
+        <li><b>Determinación del dominio</b>: todas las magnitudes deben ser positivas.</li>
+        <li><b>Condición de primer orden</b>: la ecuación $V'(x)=0$ proporciona los puntos críticos.</li>
+        <li><b>Criterio de la segunda derivada</b>: si $V''(x^*)&lt;0$, el punto crítico corresponde a un <b>máximo relativo</b>.</li>
+        <li><b>Conclusión</b>: se reportan las dimensiones óptimas y el volumen máximo.</li>
+      </ol>
+      <h4>Ejemplo: la caja sin tapa</h4>
+      <p>De una lámina de $30\times20$ cm se cortan cuadrados de lado $x$ en las esquinas y se doblan las pestañas. Entonces $V(x)=x(30-2x)(20-2x)$ con $0&lt;x&lt;10$. Al derivar, $V'(x)=12x^2-200x+600=0$ da $x=\dfrac{50-\sqrt{700}}{6}\approx3.92$ cm, y $V''(3.92)&lt;0$. El volumen máximo es $V\approx1056.3\ \text{cm}^3$. El ejemplo se encuentra precargado en el laboratorio; el botón <b>Después: óptimo</b> muestra el plegado de la lámina en la configuración óptima.</p>
+    </section>
+    <section class="card">
+      <h2>Laboratorio de optimización</h2>
+      <p class="lead">Seleccione un modelo y modifique sus parámetros, o defina una caja o una función de volumen personalizada. El sistema deriva la función, determina el máximo y representa el sólido antes y después de la optimización.</p>
+      <div class="labgrid">
+        <div>
+          <div class="viewer3" id="op-view"><div class="hud2" id="op-hud"></div><div class="legend2" id="op-leg"></div></div>
+          <div class="controls">
+            <button id="op-before" class="sec">◀ Antes</button>
+            <button id="op-after">Después: óptimo ▶</button>
+            <label id="op-foldw">Plegado <input type="range" id="op-fold" min="0" max="1" step="0.01" value="0"></label>
+          </div>
+        </div>
+        <div class="panel">
+          <label>Modelo <select id="op-model"></select></label>
+          <div id="op-params" style="display:flex;flex-direction:column;gap:10px"></div>
+          <label><span>x (antes) = <b id="op-xv"></b></span><input type="range" id="op-x" min="0" max="1" step="0.001" value="0.25"></label>
+          <div class="btns"><button class="btn" id="op-go">Optimizar</button><button class="btn sec" id="op-ex">Ejemplo</button></div>
+          <div class="err" id="op-err"></div>
+        </div>
+      </div>
+      <div class="cmpbox" id="op-cmp"></div>
+      <div class="split2">
+        <div><canvas class="plot" id="op-cv"></canvas><div class="hint">Gráfica de $V(x)$: el punto naranja es la caja de «antes» y el verde es el máximo.</div></div>
+        <div><canvas class="plot" id="op-cvd"></canvas><div class="hint">Gráfica de $V'(x)$: el máximo ocurre donde la derivada cruza el cero.</div></div>
+      </div>
+      <h3>Procedimiento</h3>
+      <ol class="steps" id="op-steps"></ol>
+      <div class="result" id="op-res"></div>
+    </section>
+  </div>
+</div>
+
+<!-- ===================== CÁLCULO INTEGRAL ===================== -->
+<div class="view" id="view-int" hidden>
+  <div class="subtabs" data-view="int">
+    <button data-sub="int-area">Área bajo la curva</button>
+    <button data-sub="int-entre">Área entre curvas</button>
+    <button data-sub="int-solido">Sólido de revolución 3D</button>
+    <button data-sub="int-solidos">Teoría y Ejercicio 26</button>
+  </div>
+
+  <div class="sub mz" id="int-area">
+    <section class="card theory">
+      <h2>Área bajo la curva</h2>
+      <div class="grid2">
+        <div>
+          <p>Para determinar el área comprendida entre la gráfica de $f$ y el eje en $[a,b]$, se particiona el intervalo en $n$ rectángulos de ancho $\Delta x=\dfrac{b-a}{n}$ y se suman sus áreas (<b>suma de Riemann</b>). Al hacer $n\to\infty$ la suma se convierte en la integral definida:</p>
+          <div class="formula">$$\int_a^b f(x)\,dx=\lim_{n\to\infty}\sum_{i=1}^{n}f(x_i^*)\,\Delta x$$</div>
+          <p>Por el <b>teorema fundamental del cálculo</b> (regla de Barrow), si $F'=f$, entonces $\int_a^b f(x)\,dx=F(b)-F(a)$.</p>
+          <div class="warn">⚠ La integral da área <b>con signo</b>: las partes bajo el eje restan. Para el área geométrica se integra $|f(x)|$, separando el intervalo donde $f$ cambia de signo.</div>
+          <p>Con <b>$dy$</b> se usan rectángulos horizontales y la curva se escribe como $x=f(y)$; el área queda entre la curva y el eje $Y$.</p>
+        </div>
+        <div>
+          <h4>Ejemplo</h4>
+          <p>$f(x)=x^2+1$ en $[0,2]$:</p>
+          <p>$$A=\int_0^2(x^2+1)\,dx=\left[\frac{x^3}{3}+x\right]_0^2=\frac83+2=\frac{14}{3}$$</p>
+          <p>Se encuentra precargado en el graficador. Al incrementar $n$, la suma de Riemann converge a $\tfrac{14}{3}\approx4.6667$.</p>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Graficador: área bajo la curva</h2>
+      <div class="labgrid">
+        <div><canvas class="plot" id="ab-cv"></canvas><div class="hint">Arrastrar: mover la vista · Rueda: zoom</div></div>
+        <div class="panel">
+          <label>Diferencial <select id="ab-var"><option value="x">dx: rectángulos verticales, y = f(x)</option><option value="y">dy: rectángulos horizontales, x = f(y)</option></select></label>
+          <label><span id="ab-flab">f(x) =</span><input type="text" id="ab-f" value="x^2+1" spellcheck="false"></label>
+          <div class="row2"><label>a = <input type="text" id="ab-a" value="0"></label><label>b = <input type="text" id="ab-b" value="2"></label></div>
+          <label>Punto de muestra <select id="ab-m"><option value="m">punto medio</option><option value="l">extremo izquierdo</option><option value="r">extremo derecho</option></select></label>
+          <label>Rectángulos n = <b id="ab-nv">8</b><input type="range" id="ab-n" min="1" max="200" value="8"></label>
+          <div class="btns"><button class="btn" id="ab-go">Calcular</button><button class="btn sec" id="ab-ex">Ejemplo</button></div>
+          <div class="err" id="ab-err"></div>
+        </div>
+      </div>
+      <h3>Procedimiento</h3>
+      <ol class="steps" id="ab-steps"></ol>
+      <div class="result" id="ab-res"></div>
+    </section>
+  </div>
+
+  <div class="sub mz" id="int-entre" hidden>
+    <section class="card theory">
+      <h2>Área entre curvas</h2>
+      <div class="grid2">
+        <div>
+          <p>Si $f(x)\ge g(x)$ en $[a,b]$, cada rectángulo vertical tiene altura $f(x)-g(x)$ (curva de arriba menos curva de abajo):</p>
+          <div class="formula">$$A=\int_a^b\big[f(x)-g(x)\big]\,dx$$</div>
+          <p>Los límites suelen ser los <b>puntos de intersección</b>: se igualan las curvas, $f(x)=g(x)$. Si las curvas se cruzan dentro del intervalo, se descompone la integral en cada punto de corte y en cada subintervalo se resta la función superior menos la inferior, lo que equivale a integrar $|f-g|$.</p>
+          <p>Con rectángulos horizontales ($dy$) se resta la curva derecha menos la izquierda: $A=\int_c^d\big[f(y)-g(y)\big]\,dy$.</p>
+        </div>
+        <div>
+          <h4>Ejemplo</h4>
+          <p>$f(x)=4x-x^2$ y $g(x)=x$. Se cortan donde $4x-x^2=x$, es decir, en $x=0$ y $x=3$:</p>
+          <p>$$A=\int_0^3(3x-x^2)\,dx=\left[\frac{3x^2}{2}-\frac{x^3}{3}\right]_0^3=\frac{27}{2}-9=\frac92$$</p>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Graficador: área entre curvas</h2>
+      <div class="labgrid">
+        <div><canvas class="plot" id="ae-cv"></canvas><div class="hint">Arrastrar: mover la vista · Rueda: zoom</div></div>
+        <div class="panel">
+          <label>Diferencial <select id="ae-var"><option value="x">dx: rectángulos verticales</option><option value="y">dy: rectángulos horizontales</option></select></label>
+          <label><span id="ae-flab">f(x) =</span><input type="text" id="ae-f" value="4x-x^2" spellcheck="false"></label>
+          <label><span id="ae-glab">g(x) =</span><input type="text" id="ae-g" value="x" spellcheck="false"></label>
+          <div class="row2"><label>a = <input type="text" id="ae-a" value="0"></label><label>b = <input type="text" id="ae-b" value="3"></label></div>
+          <button class="btn sec" id="ae-int">Usar intersecciones como límites</button>
+          <label>Punto de muestra <select id="ae-m"><option value="m">punto medio</option><option value="l">extremo izquierdo</option><option value="r">extremo derecho</option></select></label>
+          <label>Rectángulos n = <b id="ae-nv">10</b><input type="range" id="ae-n" min="1" max="200" value="10"></label>
+          <div class="btns"><button class="btn" id="ae-go">Calcular</button><button class="btn sec" id="ae-ex">Ejemplo</button></div>
+          <div class="err" id="ae-err"></div>
+        </div>
+      </div>
+      <h3>Procedimiento</h3>
+      <ol class="steps" id="ae-steps"></ol>
+      <div class="result" id="ae-res"></div>
+    </section>
+  </div>
+
+  <div class="sub mz" id="int-solido" hidden>
+    <section class="card theory">
+      <h2>Sólido de revolución con tu propia función</h2>
+      <p>Defina la región (una o dos curvas y los límites de integración), el diferencial y el eje de revolución. El sistema selecciona el método según la orientación del rectángulo representativo respecto al eje (ver la teoría completa en <a href="#" data-go="int" data-sub="int-solidos">Teoría y Ejercicio 26</a>):</p>
+      <div class="tblwrap"><table class="cmp">
+        <tr><th>Rectángulo respecto al eje</th><th>Método</th><th>Volumen</th></tr>
+        <tr><td>Perpendicular</td><td>Discos o arandelas</td><td>$V=\pi\displaystyle\int_a^b\big(R^2-r^2\big)\,ds$</td></tr>
+        <tr><td>Paralelo</td><td>Capas cilíndricas</td><td>$V=2\pi\displaystyle\int_a^b\rho\,h\,ds$</td></tr>
+      </table></div>
+      <h4>Ejemplo</h4>
+      <p>La región entre $y=x$ y $y=x^2$ (se cortan en $x=0$ y $x=1$) gira alrededor del eje $X$. Los rectángulos verticales no son adyacentes al eje; por lo tanto, se aplica el método de arandelas con $R=x$ y $r=x^2$: $$V=\pi\int_0^1\left(x^2-x^4\right)dx=\pi\left(\frac13-\frac15\right)=\frac{2\pi}{15}$$</p>
+    </section>
+    <section class="card">
+      <h2>Graficador 3D de sólidos de revolución</h2>
+      <div class="labgrid">
+        <div>
+          <div class="viewer3" id="s3-view"><div class="hud2" id="s3-hud"></div><div class="legend2"><i style="background:#f2a93b"></i>región<i style="background:#e5484d"></i>eje<i style="background:#4f8cff"></i>sólido<i style="background:#38c793"></i>elementos</div></div>
+          <div class="controls">
+            <button id="s3-play">⏸ Pausa</button>
+            <button class="sec" id="s3-reset">↺ Reiniciar</button>
+            <label>Ángulo <input type="range" id="s3-ang" min="0" max="360" value="0"></label>
+            <label>Elementos <input type="range" id="s3-n" min="1" max="40" value="8"> <b id="s3-nv">8</b></label>
+            <label><input type="checkbox" id="s3-shS" checked> sólido</label>
+            <label><input type="checkbox" id="s3-shR" checked> rectángulos</label>
+          </div>
+        </div>
+        <div class="panel">
+          <label>Diferencial <select id="s3-var"><option value="x">dx: rectángulos verticales</option><option value="y">dy: rectángulos horizontales</option></select></label>
+          <label><span id="s3-flab">Curva 1: y = f(x)</span><input type="text" id="s3-f" value="x" spellcheck="false"></label>
+          <label><span id="s3-glab">Curva 2: y = g(x)</span><input type="text" id="s3-g" value="x^2" spellcheck="false"></label>
+          <div class="row2"><label>a = <input type="text" id="s3-a" value="0"></label><label>b = <input type="text" id="s3-b" value="1"></label></div>
+          <label>Eje de giro <select id="s3-ax"><option value="h">horizontal: y = k</option><option value="v">vertical: x = k</option></select></label>
+          <label>k = <input type="text" id="s3-k" value="0"></label>
+          <div class="btns"><button class="btn" id="s3-go">Calcular</button><button class="btn sec" id="s3-ex">Ejemplo</button></div>
+          <div class="hint">Para una sola curva escribe <code>0</code> en la curva 2: la región queda entre la curva y el eje coordenado.</div>
+          <div class="err" id="s3-err"></div>
+        </div>
+      </div>
+      <h3>Procedimiento</h3>
+      <ol class="steps" id="s3-steps"></ol>
+      <div class="result" id="s3-res"></div>
+    </section>
+  </div>
+
+  <div class="sub" id="int-solidos" hidden>
+<header>
+  <button class="themebtn" id="themeBtn">◐ Tema</button>
+  <h1>Sólidos de revolución: Ejercicio 26</h1>
+  <p>Fundamentación teórica de los métodos de discos, arandelas y capas cilíndricas, y solución detallada de los 20 problemas, cada uno con su animación tridimensional.</p>
+</header>
+
+<div class="wrap">
+<!-- ===================== ÍNDICE ===================== -->
+<section class="card toc" id="indice">
+  <h2>Tabla de contenidos</h2>
+  <ol>
+    <li><a href="#idea">Fundamento: particionar e integrar</a></li>
+    <li><a href="#discos">Método de discos</a></li>
+    <li><a href="#arandelas">Método de arandelas</a></li>
+    <li><a href="#capas">Método de capas cilíndricas</a></li>
+    <li><a href="#elegir">Criterio de selección y procedimiento general</a></li>
+    <li><a href="#pappus">Comprobación rápida: teorema de Pappus</a></li>
+    <li><a href="#problemas">Problemas resueltos (Ejercicio 26)</a>
+      <ul class="probs" id="tocProbs"></ul>
+    </li>
+  </ol>
+</section>
+
+<!-- ===================== TEORÍA ===================== -->
+<section class="card theory" id="idea">
+  <h2>1. Fundamento: particionar e integrar</h2>
+  <p>Un <b>sólido de revolución</b> se forma al girar una región plana $R$ una vuelta completa ($360^\circ$) alrededor de una recta llamada <b>eje de revolución</b>. Por ejemplo, un cono se genera al rotar un triángulo rectángulo alrededor de uno de sus catetos, y una esfera al rotar un semicírculo alrededor de su diámetro.</p>
+  <p>Su volumen se obtiene mediante el mismo principio de las sumas de Riemann empleado en el cálculo de áreas:</p>
+  <ol>
+    <li>Se particiona la región en $n$ <b>rectángulos</b> de ancho infinitesimal de ancho $\Delta x$ (o $\Delta y$).</li>
+    <li>Cada rectángulo, al rotar, genera un sólido elemental de volumen conocido: un <b>disco</b>, una <b>arandela</b> o una <b>capa cilíndrica</b>.</li>
+    <li>Se suman los volúmenes elementales: $V\approx\sum_{i=1}^{n}\Delta V_i$.</li>
+    <li>Al tomar el límite cuando $n\to\infty$, la suma converge a una integral definida: $V=\lim_{n\to\infty}\sum \Delta V_i=\int dV$.</li>
+  </ol>
+  <p>El método aplicable depende de la <b>orientación del rectángulo representativo respecto al eje</b>:</p>
+  <div class="tblwrap"><table class="cmp">
+    <tr><th>Rectángulo respecto al eje</th><th>Sólido elemental</th><th>Volumen del elemento</th></tr>
+    <tr><td>Perpendicular y adyacente al eje</td><td>Disco (cilindro macizo delgado)</td><td>$dV=\pi R^2\,dx$</td></tr>
+    <tr><td>Perpendicular y <i>no</i> adyacente al eje</td><td>Arandela (disco con hueco)</td><td>$dV=\pi(R^2-r^2)\,dx$</td></tr>
+    <tr><td>Paralelo al eje</td><td>Capa cilíndrica (tubo delgado)</td><td>$dV=2\pi\rho\,h\,dx$</td></tr>
+  </table></div>
+  <p>En la animación de cada problema es posible modificar el número de rectángulos: la suma de los $n$ sólidos elementales converge al volumen exacto a medida que $n$ aumenta.</p>
+</section>
+
+<section class="card theory" id="discos">
+  <h2>2. Método de discos</h2>
+  <div class="grid2">
+    <div>
+      <p>Se aplica cuando la región es adyacente al eje de revolución, es decir, cuando una de sus fronteras coincide con dicho eje. Se considera un rectángulo representativo <b>perpendicular al eje</b>, de altura $f(x)$ y ancho $dx$, que al rotar genera un cilindro circular recto de espesor infinitesimal con:</p>
+      <ul>
+        <li><b>radio</b> $R(x)=f(x)$: la distancia del eje a la curva,</li>
+        <li><b>espesor</b> $dx$.</li>
+      </ul>
+      <p>Dado que el volumen de un cilindro es el producto del área de la base por la altura, $dV=\pi[R(x)]^2\,dx$. Sumando desde $x=a$ hasta $x=b$:</p>
+      <div class="formula">$$V=\pi\int_a^b [R(x)]^2\,dx\qquad\text{(giro alrededor del eje }X)$$</div>
+      <p>Si la rotación es alrededor del eje $Y$, los rectángulos son horizontales; es necesario <b>expresar $x$ en función de $y$</b> e integrar respecto a $y$:</p>
+      <div class="formula">$$V=\pi\int_c^d [R(y)]^2\,dy,\qquad R(y)=x(y)$$</div>
+      <p>Si el eje es otra recta, como $y=k$, el radio es la distancia a esa recta: $R=|f(x)-k|$.</p>
+      <p><a href="#problemas" data-p="0">Ejemplo animado: problema 1 →</a></p>
+    </div>
+    <svg viewBox="0 0 320 210" role="img" aria-label="Rectángulo perpendicular al eje que genera un disco">
+      <path class="reg" d="M30 160 Q120 40 290 55 L290 160 Z"/>
+      <path class="cur" d="M30 160 Q120 40 290 55"/>
+      <ellipse class="sol" cx="186" cy="160" rx="14" ry="87"/>
+      <rect class="rc" x="179" y="73" width="14" height="87"/>
+      <line class="ax" x1="10" y1="160" x2="312" y2="160"/>
+      <text x="292" y="178">eje X</text>
+      <path class="dim" d="M206 73 L206 160"/><path class="dim" d="M201 73 L211 73 M201 160 L211 160"/>
+      <text x="212" y="122">R(x)</text>
+      <text x="177" y="200">dx</text>
+      <text x="40" y="40" style="font-weight:600">disco: πR²·dx</text>
+      <text x="225" y="48">y = f(x)</text>
+    </svg>
+  </div>
+</section>
+
+<section class="card theory" id="arandelas">
+  <h2>3. Método de arandelas</h2>
+  <div class="grid2">
+    <div>
+      <p>Se aplica cuando la región <b>no es adyacente al eje</b>, como ocurre en una región comprendida entre dos curvas. El rectángulo representativo es <b>perpendicular al eje</b>, pero al rotar genera un sólido anular (arandela) con una cavidad central, caracterizado por dos radios:</p>
+      <ul>
+        <li><b>radio exterior</b> $R(x)$: distancia del eje a la curva más <i>lejana</i>,</li>
+        <li><b>radio interior</b> $r(x)$: distancia del eje a la curva más <i>cercana</i>.</li>
+      </ul>
+      <p>Su volumen es la diferencia entre el volumen del disco exterior y el de la cavidad: $dV=\pi R^2dx-\pi r^2dx$.</p>
+      <div class="formula">$$V=\pi\int_a^b\Big([R(x)]^2-[r(x)]^2\Big)\,dx$$</div>
+      <div class="warn">⚠ Error frecuente: $\;[R^2-r^2]\neq (R-r)^2$. Cada radio se eleva al cuadrado antes de efectuar la resta.</div>
+      <p>Los límites $a$ y $b$ se obtienen, por lo general, <b>igualando ambas curvas</b> (puntos de intersección). El disco es un caso particular de la arandela, con $r=0$.</p>
+      <p><a href="#problemas" data-p="12">Ejemplo animado: problema 13 →</a></p>
+    </div>
+    <svg viewBox="0 0 320 210" role="img" aria-label="Rectángulo entre dos curvas que genera una arandela">
+      <path class="reg" d="M30 120 Q140 20 290 40 L290 120 Q160 130 30 120 Z"/>
+      <path class="cur" d="M30 120 Q140 20 290 40"/>
+      <path class="cur" d="M30 120 Q160 130 290 120"/>
+      <ellipse class="sol" cx="186" cy="170" rx="16" ry="125" />
+      <ellipse cx="186" cy="170" rx="8" ry="45" style="fill:var(--canvas);stroke:#4f8cff;stroke-width:1.5"/>
+      <rect class="rc" x="179" y="45" width="14" height="80"/>
+      <line class="ax" x1="10" y1="170" x2="312" y2="170"/>
+      <text x="270" y="190">eje</text>
+      <path class="dim" d="M222 45 L222 170 M217 45 L227 45"/><text x="228" y="80">R</text>
+      <path class="dim" d="M150 125 L150 170 M145 125 L155 125"/><text x="135" y="152">r</text>
+      <text x="40" y="200" style="font-weight:600">arandela: π(R² − r²)·dx</text>
+    </svg>
+  </div>
+</section>
+
+<section class="card theory" id="capas">
+  <h2>4. Método de capas cilíndricas</h2>
+  <div class="grid2">
+    <div>
+      <p>En este caso el rectángulo representativo es <b>paralelo al eje</b>. Al rotar genera una <b>capa cilíndrica</b> (cascarón) de pared infinitesimal, definida por:</p>
+      <ul>
+        <li><b>radio</b> $\rho(x)$: distancia del eje al rectángulo,</li>
+        <li><b>altura</b> $h(x)$: largo del rectángulo (curva de arriba − curva de abajo),</li>
+        <li><b>espesor</b> $dx$.</li>
+      </ul>
+      <p><b>Deducción de $2\pi\rho h\,dx$.</b> Al seccionar y desenrollar la capa se obtiene, aproximadamente, una lámina rectangular de longitud $2\pi\rho$ (perímetro de la circunferencia), altura $h$ y espesor $dx$. El mismo resultado se obtiene como diferencia de volúmenes de dos cilindros: $\pi(\rho+\tfrac{dx}{2})^2h-\pi(\rho-\tfrac{dx}{2})^2h=2\pi\rho h\,dx$.</p>
+      <div class="formula">$$V=2\pi\int_a^b \rho(x)\,h(x)\,dx$$</div>
+      <p>Si el eje es la recta vertical $x=k$, entonces $\rho=|x-k|$. Si es la recta horizontal $y=k$, los rectángulos son horizontales, se integra en $y$ y $\rho=|y-k|$.</p>
+      <p><b>Ventaja:</b> evita invertir la función cuando el despeje es complejo, y constituye el método natural cuando el eje es paralelo al rectángulo representativo.</p>
+      <p><a href="#problemas" data-p="19">Ejemplo animado: problema 20 →</a></p>
+    </div>
+    <svg viewBox="0 0 320 220" role="img" aria-label="Rectángulo paralelo al eje que genera una capa cilíndrica">
+      <line class="ax" x1="120" y1="10" x2="120" y2="210"/>
+      <text x="126" y="22">eje</text>
+      <path class="reg" d="M170 180 Q235 40 300 180 Z"/>
+      <path class="cur" d="M170 180 Q235 40 300 180"/>
+      <ellipse class="sol" cx="120" cy="180" rx="130" ry="18"/>
+      <ellipse cx="120" cy="105" rx="130" ry="18" style="fill:none;stroke:#4f8cff;stroke-width:2;stroke-dasharray:5 4"/>
+      <line x1="-10" y1="105" x2="-10" y2="180" style="stroke:#4f8cff;stroke-width:2"/>
+      <rect class="rc" x="243" y="105" width="14" height="75"/>
+      <path class="dim" d="M120 196 L250 196 M120 191 L120 201 M250 191 L250 201"/><text x="178" y="214">ρ</text>
+      <path class="dim" d="M266 105 L266 180 M261 105 L271 105 M261 180 L271 180"/><text x="272" y="146">h</text>
+      <text x="8" y="40" style="font-weight:600">capa: 2πρh·dx</text>
+    </svg>
+  </div>
+</section>
+
+<section class="card theory" id="elegir">
+  <h2>5. Criterio de selección y procedimiento general</h2>
+  <div class="tblwrap"><table class="cmp">
+    <tr><th>Eje de giro</th><th>Rectángulos verticales (integro en $x$)</th><th>Rectángulos horizontales (integro en $y$)</th></tr>
+    <tr><td>Horizontal ($X$ o $y=k$)</td><td>Perpendiculares → <b>discos / arandelas</b><br>$\pi\int(R^2-r^2)\,dx$</td><td>Paralelos → <b>capas</b><br>$2\pi\int\rho\,h\,dy$</td></tr>
+    <tr><td>Vertical ($Y$ o $x=k$)</td><td>Paralelos → <b>capas</b><br>$2\pi\int\rho\,h\,dx$</td><td>Perpendiculares → <b>discos / arandelas</b><br>$\pi\int(R^2-r^2)\,dy$</td></tr>
+  </table></div>
+  <h4>Procedimiento general</h4>
+  <ol>
+    <li><b>Representación de la región.</b> Si una ecuación está en forma general (como $9x^2+25y^2-54x-144=0$), se <b>completan cuadrados</b> para identificar la cónica.</li>
+    <li><b>Determinación de los límites</b> igualando las curvas (puntos de intersección) o a partir de las rectas dadas.</li>
+    <li><b>Selección del rectángulo representativo</b> (vertical u horizontal) según la tabla y la complejidad de la integral resultante.</li>
+    <li><b>Expresión de los radios o la altura</b> como distancias al eje: radio = |coordenada − eje|, altura = (curva superior/derecha) − (curva inferior/izquierda).</li>
+    <li><b>Planteamiento de la integral</b>, desarrollo de los binomios, integración término a término y <b>evaluación mediante la regla de Barrow</b>: $\int_a^b f=F(b)-F(a)$.</li>
+    <li>El resultado se expresa en unidades cúbicas ($u^3$).</li>
+  </ol>
+  <h4>Integrales de uso frecuente</h4>
+  <div class="formula">$$\int x^n\,dx=\frac{x^{n+1}}{n+1}+C\;(n\neq-1)\qquad \int_{-a}^{a}\text{(impar)}\,dx=0\qquad \int_{-a}^{a}\text{(par)}\,dx=2\int_0^a\text{(par)}\,dx$$</div>
+</section>
+
+<section class="card theory" id="pappus">
+  <h2>6. Comprobación rápida: teorema de Pappus</h2>
+  <p>Si una región de área $A$ gira alrededor de un eje que no la corta, y su centroide está a una distancia $\bar d$ del eje, el volumen es:</p>
+  <div class="formula">$$V=2\pi\,\bar d\,A$$</div>
+  <p>Permite verificar resultados cuando la región es una figura de centroide conocido, como un círculo o una elipse (problemas 17 y 19).</p>
+</section>
+</div>
+
+<!-- ===================== PROBLEMAS ===================== -->
+<div class="layout" id="problemas">
+  <nav id="nav"></nav>
+  <main class="card" style="margin-top:0">
+    <div><span class="tag" id="tagMethod"></span><span class="tag" id="tagAxis"></span></div>
+    <h2 id="title"></h2>
+    <p class="enun" id="enun"></p>
+    <div id="viewer">
+      <div id="hud"></div>
+      <div id="legend"><i style="background:#f2a93b"></i>región<i style="background:#e5484d"></i>eje de giro<i style="background:#4f8cff"></i>sólido<i style="background:#38c793"></i>rectángulos</div>
+    </div>
+    <div class="controls">
+      <button id="play">⏸ Pausa</button>
+      <button class="sec" id="reset">↺ Reiniciar</button>
+      <label>Ángulo <input type="range" id="ang" min="0" max="360" value="0"></label>
+      <label>Velocidad <input type="range" id="spd" min="10" max="200" value="60"></label>
+      <label>Rectángulos <input type="range" id="nrect" min="1" max="40" value="8"> <b id="nval">8</b></label>
+      <label><input type="checkbox" id="shSolid" checked> sólido</label>
+      <label><input type="checkbox" id="shRect" checked> rectángulos</label>
+      <label><input type="checkbox" id="shRegion" checked> región</label>
+    </div>
+    <h3>Solución paso a paso</h3>
+    <ol class="steps" id="steps"></ol>
+    <div class="result" id="result"></div>
+    <div class="check" id="check"></div>
+    <div class="note" id="note" hidden></div>
+  </main>
+</div>
+  </div><!-- /int-solidos -->
+</div><!-- /view-int -->
+
+<script>
+const S = Math.sqrt, PI = Math.PI;
+const sq = v => S(Math.max(0, v));
+/* Cada problema: eje {t:'x' (recta y=c) | 'y' (recta x=c), c}; franjas 'v' (variable x) u 'h' (variable y)
+   en [a,b]; lo(s) y hi(s) son los límites de la otra coordenada. exact = volumen exacto.
+   steps: [etiqueta, explicación con LaTeX]. */
+const P = [
+{ en:String.raw`Región limitada por $y=\sqrt{x}$ de $x=0$ a $x=4$, gira alrededor del eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:0, b:4, lo:x=>0, hi:x=>sq(x), m:'Discos', exact:8*PI, res:String.raw`V = 8\pi\ u^3`,
+  steps:[
+  ['Región', String.raw`Es el área bajo la curva $y=\sqrt{x}$ y sobre el eje $X$, entre $x=0$ y $x=4$. Su borde inferior es el propio eje de giro; por lo tanto, la región es adyacente al eje y se usan <b>discos</b>.`],
+  ['Rectángulo y elemento de volumen', String.raw`Se considera un rectángulo vertical en la posición $x$, de ancho $dx$ y altura $\sqrt{x}$. Al girar alrededor del eje $X$ forma un disco de radio $R(x)=\sqrt{x}$ y grosor $dx$: $$dV=\pi[R(x)]^2dx=\pi(\sqrt{x})^2dx=\pi x\,dx$$`],
+  ['Planteamiento de la integral', String.raw`Se integran los discos desde $x=0$ hasta $x=4$: $$V=\pi\int_0^4 x\,dx$$`],
+  ['Integración', String.raw`Regla de la potencia con $n=1$: $\int x\,dx=\dfrac{x^{2}}{2}$. $$V=\pi\left[\frac{x^2}{2}\right]_0^4$$`],
+  ['Evaluación (Barrow)', String.raw`$$V=\pi\left(\frac{4^2}{2}-\frac{0^2}{2}\right)=\pi\left(\frac{16}{2}-0\right)=8\pi$$`]]},
+{ en:String.raw`Región limitada por $f(x)=\sqrt{x-2}$ y las rectas $x=2$, $x=11$, gira alrededor del eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:2, b:11, lo:x=>0, hi:x=>sq(x-2), m:'Discos', exact:81*PI/2, res:String.raw`V=\dfrac{81}{2}\pi\ u^3`,
+  steps:[
+  ['Región', String.raw`La curva $y=\sqrt{x-2}$ empieza en $x=2$ (ahí vale $0$) y la región llega hasta $x=11$, donde $y=\sqrt9=3$. El borde inferior es el eje $X$; por lo tanto, se usan <b>discos</b>.`],
+  ['Elemento de volumen', String.raw`Radio del disco: $R(x)=\sqrt{x-2}$. Al elevarlo al cuadrado desaparece la raíz: $$dV=\pi(\sqrt{x-2})^2dx=\pi(x-2)\,dx$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_2^{11}(x-2)\,dx$$`],
+  ['Integración', String.raw`Con el cambio $u=x-2$, $du=dx$: $\int u\,du=\dfrac{u^2}{2}$. Entonces $\int(x-2)dx=\dfrac{(x-2)^2}{2}$. $$V=\pi\left[\frac{(x-2)^2}{2}\right]_2^{11}$$`],
+  ['Evaluación', String.raw`$$V=\pi\left(\frac{(11-2)^2}{2}-\frac{(2-2)^2}{2}\right)=\pi\left(\frac{81}{2}-0\right)=\frac{81\pi}{2}$$`]]},
+{ en:String.raw`Región limitada por $f(x)=x^2$ y las rectas $x=0$, $x=3$, gira alrededor del eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:0, b:3, lo:x=>0, hi:x=>x*x, m:'Discos', exact:243*PI/5, res:String.raw`V=\dfrac{243}{5}\pi\ u^3`,
+  steps:[
+  ['Región', String.raw`Es el área bajo la parábola $y=x^2$, sobre el eje $X$, entre $x=0$ y $x=3$. Es adyacente al eje de revolución; por lo tanto, se usan <b>discos</b>.`],
+  ['Elemento de volumen', String.raw`Radio $R(x)=x^2$, por lo que $R^2=(x^2)^2=x^4$: $$dV=\pi x^4\,dx$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_0^3x^4\,dx$$`],
+  ['Integración', String.raw`Regla de la potencia con $n=4$: $\int x^4dx=\dfrac{x^5}{5}$. $$V=\pi\left[\frac{x^5}{5}\right]_0^3$$`],
+  ['Evaluación', String.raw`$3^5=243$: $$V=\pi\left(\frac{243}{5}-0\right)=\frac{243\pi}{5}$$`]]},
+{ en:String.raw`Región limitada por $f(x)=\sqrt{x}$ y las rectas $y=2$, $x=0$, gira alrededor del eje $Y$.`,
+  ax:{t:'y',c:0}, st:'h', a:0, b:2, lo:y=>0, hi:y=>y*y, m:'Discos', exact:32*PI/5, res:String.raw`V=\dfrac{32}{5}\pi\ u^3`,
+  steps:[
+  ['Región', String.raw`Está encerrada entre el eje $Y$ ($x=0$), la recta $y=2$ y la curva $y=\sqrt x$. La curva llega a $y=2$ cuando $x=4$. El borde izquierdo es el eje de giro; por lo tanto, se usan <b>discos</b>.`],
+  ['Cambio de variable de integración', String.raw`El eje es $Y$; por lo tanto, los discos se forman con rectángulos <b>horizontales</b> de grosor $dy$. Se expresa $x$ en función de $y$: $$y=\sqrt{x}\;\Rightarrow\;x=y^2,\qquad 0\le y\le2$$`],
+  ['Elemento de volumen', String.raw`El rectángulo va de $x=0$ a $x=y^2$; por lo tanto, el radio es $R(y)=y^2$: $$dV=\pi(y^2)^2dy=\pi y^4\,dy$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_0^2y^4\,dy$$`],
+  ['Integración y evaluación', String.raw`$$V=\pi\left[\frac{y^5}{5}\right]_0^2=\pi\left(\frac{2^5}{5}-0\right)=\frac{32\pi}{5}$$`]]},
+{ en:String.raw`Región limitada por $f(x)=x^3$ y las rectas $x=0$, $y=8$, gira alrededor del eje $Y$.`,
+  ax:{t:'y',c:0}, st:'h', a:0, b:8, lo:y=>0, hi:y=>Math.cbrt(y), m:'Discos', exact:96*PI/5, res:String.raw`V=\dfrac{96}{5}\pi\ u^3`,
+  steps:[
+  ['Región', String.raw`Está entre el eje $Y$, la recta $y=8$ y la curva $y=x^3$. La curva llega a $y=8$ en $x=2$. Es adyacente al eje $Y$; por lo tanto, se usan <b>discos horizontales</b>.`],
+  ['Despeje', String.raw`$$y=x^3\;\Rightarrow\;x=\sqrt[3]{y}=y^{1/3},\qquad 0\le y\le 8$$`],
+  ['Elemento de volumen', String.raw`Radio $R(y)=y^{1/3}$; por lo tanto, $R^2=y^{2/3}$: $$dV=\pi y^{2/3}\,dy$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_0^8y^{2/3}\,dy$$`],
+  ['Integración', String.raw`Regla de la potencia con $n=\tfrac23$: $n+1=\tfrac53$; por lo tanto, $\int y^{2/3}dy=\dfrac{y^{5/3}}{5/3}=\dfrac35y^{5/3}$. $$V=\pi\left[\frac35y^{5/3}\right]_0^8$$`],
+  ['Evaluación', String.raw`$8^{5/3}=(\sqrt[3]{8})^5=2^5=32$: $$V=\frac{3\pi}{5}(32-0)=\frac{96\pi}{5}$$`]]},
+{ en:String.raw`Región limitada por $y=x^2$ y las rectas $x=0$, $y=16$, gira alrededor del eje $Y$.`,
+  ax:{t:'y',c:0}, st:'h', a:0, b:16, lo:y=>0, hi:y=>sq(y), m:'Discos', exact:128*PI, res:String.raw`V=128\pi\ u^3`,
+  steps:[
+  ['Región', String.raw`Está entre el eje $Y$, la parábola $y=x^2$ (rama derecha) y la recta $y=16$, que la corta en $x=4$. Es adyacente al eje $Y$; por lo tanto, se usan <b>discos horizontales</b>.`],
+  ['Despeje', String.raw`$$y=x^2\;\Rightarrow\;x=\sqrt{y},\qquad 0\le y\le 16$$`],
+  ['Elemento de volumen', String.raw`$R(y)=\sqrt{y}\;\Rightarrow\;R^2=y$: $$dV=\pi y\,dy$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_0^{16}y\,dy$$`],
+  ['Integración y evaluación', String.raw`$$V=\pi\left[\frac{y^2}{2}\right]_0^{16}=\pi\left(\frac{256}{2}-0\right)=128\pi$$`]]},
+{ en:String.raw`Superficie limitada por la parábola $y+x^2=0$ y la recta $y+4=0$, gira en torno del eje $Y$.`,
+  ax:{t:'y',c:0}, st:'h', a:-4, b:0, lo:y=>0, hi:y=>sq(-y), m:'Discos', exact:8*PI, res:String.raw`V=8\pi\ u^3`,
+  note:'La región es simétrica respecto al eje Y. Al girar, la mitad derecha genera exactamente el mismo sólido, por ello la animación representa únicamente esa mitad.',
+  steps:[
+  ['Región', String.raw`$y=-x^2$ es una parábola que abre hacia abajo con vértice en el origen. La recta $y=-4$ la corta cuando $-x^2=-4\Rightarrow x=\pm2$. La región está entre la parábola (arriba) y la recta (abajo).`],
+  ['Simetría', String.raw`La región es simétrica respecto al eje $Y$, que es el eje de giro. La mitad izquierda barre el mismo sólido que la derecha; por lo tanto, es suficiente rotar la mitad $x\ge0$, adyacente al eje: se usan <b>discos</b>.`],
+  ['Despeje', String.raw`$$x^2=-y\;\Rightarrow\;x=\sqrt{-y},\qquad -4\le y\le0$$ ($-y\ge0$ en ese intervalo; por lo tanto, la raíz existe).`],
+  ['Elemento de volumen', String.raw`$R(y)=\sqrt{-y}\Rightarrow R^2=-y$: $$dV=\pi(-y)\,dy$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_{-4}^{0}(-y)\,dy$$`],
+  ['Integración y evaluación', String.raw`$\int(-y)dy=-\dfrac{y^2}{2}$: $$V=\pi\left[-\frac{y^2}{2}\right]_{-4}^{0}=\pi\left[0-\left(-\frac{16}{2}\right)\right]=8\pi$$`]]},
+{ en:String.raw`Área limitada por $y=4-x^2$ y la recta $y=0$, gira en torno al eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:-2, b:2, lo:x=>0, hi:x=>4-x*x, m:'Discos', exact:512*PI/15, res:String.raw`V=\dfrac{512}{15}\pi\ u^3`,
+  steps:[
+  ['Límites', String.raw`La parábola corta al eje $X$ cuando $4-x^2=0\Rightarrow x=\pm2$. La región va de $x=-2$ a $x=2$ y su borde inferior es el eje; por lo tanto, se usan <b>discos</b>.`],
+  ['Elemento de volumen', String.raw`$R(x)=4-x^2$. Se desarrolla el binomio al cuadrado: $$(4-x^2)^2=16-8x^2+x^4\quad\Rightarrow\quad dV=\pi(16-8x^2+x^4)\,dx$$`],
+  ['Planteamiento (con simetría)', String.raw`El integrando es par (solo tiene potencias pares); por lo tanto, $\int_{-2}^2=2\int_0^2$: $$V=\pi\int_{-2}^{2}(4-x^2)^2dx=2\pi\int_0^2(16-8x^2+x^4)\,dx$$`],
+  ['Integración término a término', String.raw`$$V=2\pi\left[16x-\frac{8x^3}{3}+\frac{x^5}{5}\right]_0^2$$`],
+  ['Evaluación', String.raw`En $x=2$: $16(2)-\dfrac{8(8)}{3}+\dfrac{32}{5}=32-\dfrac{64}{3}+\dfrac{32}{5}$. Con denominador común $15$: $\dfrac{480-320+96}{15}=\dfrac{256}{15}$. En $x=0$ todo vale $0$. $$V=2\pi\cdot\frac{256}{15}=\frac{512\pi}{15}$$`]]},
+{ en:String.raw`Superficie limitada por $y=\sqrt{x^2+1}$ y las rectas $x=-2$, $x=2$, gira en torno al eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:-2, b:2, lo:x=>0, hi:x=>S(x*x+1), m:'Discos', exact:28*PI/3, res:String.raw`V=\dfrac{28}{3}\pi\ u^3`,
+  note:'Nota: en el enunciado original se omitió el radical; la curva correcta es y = √(x² + 1). Con ella se obtiene la respuesta del libro, 28π/3.',
+  steps:[
+  ['Región', String.raw`Es el área bajo $y=\sqrt{x^2+1}$, sobre el eje $X$, entre $x=-2$ y $x=2$. Es adyacente al eje; por lo tanto, se usan <b>discos</b>.`],
+  ['Elemento de volumen', String.raw`$R(x)=\sqrt{x^2+1}\Rightarrow R^2=x^2+1$ (la raíz desaparece): $$dV=\pi(x^2+1)\,dx$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_{-2}^{2}(x^2+1)\,dx$$`],
+  ['Integración', String.raw`$$V=\pi\left[\frac{x^3}{3}+x\right]_{-2}^{2}$$`],
+  ['Evaluación', String.raw`$F(2)=\dfrac83+2=\dfrac{14}{3}$, $\;F(-2)=-\dfrac83-2=-\dfrac{14}{3}$: $$V=\pi\left(\frac{14}{3}+\frac{14}{3}\right)=\frac{28\pi}{3}$$`]]},
+{ en:String.raw`Superficie limitada por $x^2-y^2+1=0$ y las rectas $y=1.5$, $y=3$, gira en torno al eje $Y$.`,
+  ax:{t:'y',c:0}, st:'h', a:1.5, b:3, lo:y=>0, hi:y=>sq(y*y-1), m:'Discos', exact:51*PI/8, res:String.raw`V=\dfrac{51}{8}\pi\ u^3`,
+  steps:[
+  ['Identificar la curva', String.raw`$x^2-y^2+1=0\iff y^2-x^2=1$: es una hipérbola con vértices en $(0,\pm1)$ que abre hacia arriba y hacia abajo. La región está entre el eje $Y$ y la hipérbola, entre $y=1.5$ y $y=3$.`],
+  ['Despeje', String.raw`Como gira alrededor de $Y$, se emplean rectángulos horizontales adyacentes al eje (<b>discos</b>): $$x^2=y^2-1\;\Rightarrow\;R(y)=\sqrt{y^2-1}$$`],
+  ['Elemento de volumen', String.raw`$$dV=\pi R^2dy=\pi(y^2-1)\,dy$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_{1.5}^{3}(y^2-1)\,dy$$`],
+  ['Integración', String.raw`$$V=\pi\left[\frac{y^3}{3}-y\right]_{1.5}^{3}$$`],
+  ['Evaluación', String.raw`$F(3)=\dfrac{27}{3}-3=6$. $\;F(1.5)=\dfrac{3.375}{3}-1.5=1.125-1.5=-0.375$. $$V=\pi\,[6-(-0.375)]=6.375\pi=\frac{51\pi}{8}$$`]]},
+{ en:String.raw`Superficie limitada por la semielipse $9x^2+25y^2-54x-144=0$ y el eje $X$, gira en torno al eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:-2, b:8, lo:x=>0, hi:x=>0.6*sq(25-(x-3)**2), m:'Discos', exact:60*PI, res:String.raw`V=60\pi\ u^3`,
+  steps:[
+  ['Completar cuadrados', String.raw`$9x^2-54x=9(x^2-6x)=9[(x-3)^2-9]=9(x-3)^2-81$. Se sustituye: $$9(x-3)^2-81+25y^2-144=0\;\Rightarrow\;9(x-3)^2+25y^2=225$$ Se divide entre $225$: $$\frac{(x-3)^2}{25}+\frac{y^2}{9}=1$$ Es una elipse con centro $(3,0)$, $a=5$ y $b=3$; por lo tanto, $x$ va de $3-5=-2$ a $3+5=8$.`],
+  ['Elemento de volumen', String.raw`La semielipse superior y el eje $X$ encierran la región, adyacente al eje (<b>discos</b>). De la ecuación: $y^2=\dfrac{9}{25}\left[25-(x-3)^2\right]$, y como $R=y$ basta con $y^2$ (no es necesario extraer la raíz): $$dV=\pi\,\frac{9}{25}\left[25-(x-3)^2\right]dx$$`],
+  ['Planteamiento', String.raw`$$V=\frac{9\pi}{25}\int_{-2}^{8}\left[25-(x-3)^2\right]dx$$`],
+  ['Sustitución', String.raw`$u=x-3$, $du=dx$. Límites: $x=-2\to u=-5$, $\;x=8\to u=5$: $$V=\frac{9\pi}{25}\int_{-5}^{5}(25-u^2)\,du=\frac{9\pi}{25}\left[25u-\frac{u^3}{3}\right]_{-5}^{5}$$`],
+  ['Evaluación', String.raw`$F(5)=125-\dfrac{125}{3}=\dfrac{250}{3}$, $\;F(-5)=-\dfrac{250}{3}$; por lo tanto, la diferencia es $\dfrac{500}{3}$: $$V=\frac{9\pi}{25}\cdot\frac{500}{3}=\frac{4500\pi}{75}=60\pi$$ Comprobación: es un elipsoide, $V=\tfrac43\pi ab^2=\tfrac43\pi(5)(9)=60\pi$ ✓`]]},
+{ en:String.raw`Superficie limitada por las curvas $y=x^2$ y $y=\sqrt{x}$, gira en torno al eje $Y$.`,
+  ax:{t:'y',c:0}, st:'h', a:0, b:1, lo:y=>y*y, hi:y=>sq(y), m:'Arandelas', exact:3*PI/10, res:String.raw`V=\dfrac{3}{10}\pi\ u^3`,
+  steps:[
+  ['Intersecciones', String.raw`$x^2=\sqrt{x}\Rightarrow x^4=x\Rightarrow x(x^3-1)=0\Rightarrow x=0,\;x=1$. Puntos: $(0,0)$ y $(1,1)$; por lo tanto, $0\le y\le1$.`],
+  ['Elección del método', String.raw`El eje es $Y$; por lo tanto, se emplean rectángulos horizontales. Cada uno va de una curva a la otra y <b>no es adyacente al eje</b>: se usan <b>arandelas</b>. Se despeja $x$: $$y=\sqrt x\Rightarrow x=y^2\quad(\text{curva cercana al eje}),\qquad y=x^2\Rightarrow x=\sqrt y\quad(\text{curva lejana})$$ (Por ejemplo, en $y=\tfrac14$: $y^2=\tfrac1{16}<\sqrt y=\tfrac12$.)`],
+  ['Radios', String.raw`$R(y)=\sqrt{y}$ (exterior), $\;r(y)=y^2$ (interior): $$dV=\pi\left(R^2-r^2\right)dy=\pi\left(y-y^4\right)dy$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_0^1\left(y-y^4\right)dy$$`],
+  ['Integración y evaluación', String.raw`$$V=\pi\left[\frac{y^2}{2}-\frac{y^5}{5}\right]_0^1=\pi\left(\frac12-\frac15\right)=\pi\cdot\frac{5-2}{10}=\frac{3\pi}{10}$$`]]},
+{ en:String.raw`Superficie limitada por las curvas $y=x^2$ y $y=\sqrt{x}$, gira en torno al eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:0, b:1, lo:x=>x*x, hi:x=>sq(x), m:'Arandelas', exact:3*PI/10, res:String.raw`V=\dfrac{3}{10}\pi\ u^3`,
+  steps:[
+  ['Intersecciones', String.raw`Igual que en el problema 12: las curvas se cortan en $x=0$ y $x=1$.`],
+  ['Elección del método', String.raw`El eje es $X$; por lo tanto, se emplean rectángulos verticales entre las dos curvas. No son adyacentes al eje: se usan <b>arandelas</b>. En $(0,1)$, $\sqrt x>x^2$ (en $x=\tfrac14$: $\tfrac12>\tfrac1{16}$); por lo tanto, $\sqrt x$ es la curva superior.`],
+  ['Radios', String.raw`$R(x)=\sqrt x$ (exterior), $\;r(x)=x^2$ (interior): $$dV=\pi\left[(\sqrt x)^2-(x^2)^2\right]dx=\pi(x-x^4)\,dx$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_0^1(x-x^4)\,dx$$`],
+  ['Integración y evaluación', String.raw`$$V=\pi\left[\frac{x^2}{2}-\frac{x^5}{5}\right]_0^1=\pi\left(\frac12-\frac15\right)=\frac{3\pi}{10}$$ Sale igual que el 12 porque la región es simétrica respecto a la recta $y=x$: girarla alrededor de $X$ o de $Y$ da el mismo volumen.`]]},
+{ en:String.raw`Región limitada por $x^2+y^2=25$ y $y^2-6x+15=0$, gira en torno al eje $Y$.`,
+  ax:{t:'y',c:0}, st:'h', a:-3, b:3, lo:y=>(y*y+15)/6, hi:y=>sq(25-y*y), m:'Arandelas', exact:384*PI/5, res:String.raw`V=\dfrac{384}{5}\pi\ u^3`,
+  steps:[
+  ['Identificar curvas', String.raw`$x^2+y^2=25$ es una circunferencia de radio $5$. $\;y^2=6x-15\Rightarrow x=\dfrac{y^2+15}{6}$ es una parábola que abre a la derecha, con vértice en $(2.5,\,0)$.`],
+  ['Intersecciones', String.raw`Se sustituye $y^2=6x-15$ en la circunferencia: $x^2+6x-15=25\Rightarrow x^2+6x-40=0\Rightarrow(x+10)(x-4)=0$. Solo sirve $x=4$, porque $x=-10$ daría $y^2<0$. Entonces $y^2=9\Rightarrow y=\pm3$.`],
+  ['Elección del método', String.raw`La región está entre la parábola (izquierda) y la circunferencia (derecha), para $-3\le y\le3$. Gira alrededor de $Y$; por lo tanto, se emplean rectángulos horizontales no adyacentes al eje: <b>arandelas</b>. $$R(y)=\sqrt{25-y^2},\qquad r(y)=\frac{y^2+15}{6}$$`],
+  ['Planteamiento', String.raw`$R^2=25-y^2$, $\;r^2=\dfrac{(y^2+15)^2}{36}=\dfrac{y^4+30y^2+225}{36}$: $$V=\pi\int_{-3}^{3}\left[25-y^2-\frac{y^4+30y^2+225}{36}\right]dy$$`],
+  ['Simetría', String.raw`El integrando es par; por lo tanto, $$V=2\pi\left[\int_0^3(25-y^2)\,dy-\frac{1}{36}\int_0^3(y^4+30y^2+225)\,dy\right]$$`],
+  ['Primera integral', String.raw`$$\int_0^3(25-y^2)dy=\left[25y-\frac{y^3}{3}\right]_0^3=75-9=66$$`],
+  ['Segunda integral', String.raw`$$\int_0^3(y^4+30y^2+225)dy=\left[\frac{y^5}{5}+10y^3+225y\right]_0^3=\frac{243}{5}+270+675=\frac{4968}{5}$$ Dividida entre $36$: $\dfrac{4968}{180}=\dfrac{138}{5}$.`],
+  ['Resultado', String.raw`$$V=2\pi\left(66-\frac{138}{5}\right)=2\pi\cdot\frac{330-138}{5}=2\pi\cdot\frac{192}{5}=\frac{384\pi}{5}$$`]]},
+{ en:String.raw`Superficie limitada por $y=4x-x^2$ y la recta $x-y=0$, gira en torno al eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:0, b:3, lo:x=>x, hi:x=>4*x-x*x, m:'Arandelas', exact:108*PI/5, res:String.raw`V=\dfrac{108}{5}\pi\ u^3`,
+  steps:[
+  ['Intersecciones', String.raw`La recta es $y=x$. Se igualan: $4x-x^2=x\Rightarrow 3x-x^2=0\Rightarrow x(3-x)=0\Rightarrow x=0,\;x=3$.`],
+  ['Posición relativa de las curvas', String.raw`En $x=1$: parábola $=3$, recta $=1$, por lo tanto, la parábola es la curva superior. La región está entre las dos curvas y no es adyacente al eje $X$: se usan <b>arandelas</b>. $$R(x)=4x-x^2,\qquad r(x)=x$$`],
+  ['Desarrollo', String.raw`$R^2=(4x-x^2)^2=16x^2-8x^3+x^4$, $\;r^2=x^2$: $$R^2-r^2=15x^2-8x^3+x^4$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_0^3\left(15x^2-8x^3+x^4\right)dx$$`],
+  ['Integración', String.raw`$$V=\pi\left[5x^3-2x^4+\frac{x^5}{5}\right]_0^3$$`],
+  ['Evaluación', String.raw`$5(27)-2(81)+\dfrac{243}{5}=135-162+48.6=21.6=\dfrac{108}{5}$: $$V=\frac{108\pi}{5}$$`]]},
+{ en:String.raw`Superficie limitada por la parábola $x^2-6x-8y+17=0$ y la recta $x-4y+5=0$, gira en torno al eje $X$.`,
+  ax:{t:'x',c:0}, st:'v', a:1, b:7, lo:x=>(x*x-6*x+17)/8, hi:x=>(x+5)/4, m:'Arandelas', exact:81*PI/5, res:String.raw`V=\dfrac{81}{5}\pi\ u^3`,
+  steps:[
+  ['Despejar $y$', String.raw`Parábola: $8y=x^2-6x+17\Rightarrow y=\dfrac{x^2-6x+17}{8}$. $\;$Recta: $4y=x+5\Rightarrow y=\dfrac{x+5}{4}$.`],
+  ['Intersecciones', String.raw`$\dfrac{x^2-6x+17}{8}=\dfrac{x+5}{4}\Rightarrow x^2-6x+17=2x+10\Rightarrow x^2-8x+7=0\Rightarrow(x-1)(x-7)=0$. Entonces $x=1$ y $x=7$.`],
+  ['Radios', String.raw`En $x=4$ la recta vale $\tfrac94$ y la parábola $\tfrac98$, por lo tanto, la recta es la curva superior. Ambas son positivas; por lo tanto, la región no es adyacente al eje: se usan <b>arandelas</b>. $$R=\frac{x+5}{4},\qquad r=\frac{x^2-6x+17}{8}$$`],
+  ['Planteamiento', String.raw`$$V=\pi\int_1^7\left[\frac{(x+5)^2}{16}-\frac{(x^2-6x+17)^2}{64}\right]dx=\pi\,(A-B)$$`],
+  ['Integral A', String.raw`Con $w=x+5$: $$A=\frac1{16}\int_1^7(x+5)^2dx=\frac{1}{16}\left[\frac{(x+5)^3}{3}\right]_1^7=\frac{12^3-6^3}{48}=\frac{1728-216}{48}=\frac{63}{2}$$`],
+  ['Integral B', String.raw`Se completa el cuadrado: $x^2-6x+17=(x-3)^2+8$. Con $u=x-3$ los límites quedan $-2$ y $4$, y $(u^2+8)^2=u^4+16u^2+64$: $$B=\frac1{64}\left[\frac{u^5}{5}+\frac{16u^3}{3}+64u\right]_{-2}^{4}$$ $F(4)=\tfrac{1024}{5}+\tfrac{1024}{3}+256$, $\;F(-2)=-\tfrac{32}{5}-\tfrac{128}{3}-128$. $\;F(4)-F(-2)=\tfrac{1056}{5}+384+384=\tfrac{4896}{5}$; por lo tanto, $B=\dfrac{4896}{320}=\dfrac{153}{10}$.`],
+  ['Resultado', String.raw`$$V=\pi\left(\frac{63}{2}-\frac{153}{10}\right)=\pi\cdot\frac{315-153}{10}=\frac{162\pi}{10}=\frac{81\pi}{5}$$`]]},
+{ en:String.raw`Superficie limitada por la circunferencia $x^2+y^2=1$, gira en torno a la recta $x+3=0$.`,
+  ax:{t:'y',c:-3}, st:'v', a:-1, b:1, lo:x=>-sq(1-x*x), hi:x=>sq(1-x*x), m:'Capas cilíndricas', exact:6*PI*PI, res:String.raw`V=6\pi^2\ u^3`,
+  steps:[
+  ['Región y eje', String.raw`La región es el círculo de radio $1$ con centro en el origen. El eje es la recta vertical $x=-3$, a distancia $3$ del centro. El sólido generado es un <b>toro</b>.`],
+  ['Elección del método', String.raw`Con rectángulos verticales (paralelos al eje vertical) cada uno genera una <b>capa cilíndrica</b>, y se evita descomponer la frontera en dos ramas, como exigiría el método de arandelas.`],
+  ['Radio y altura', String.raw`El rectángulo en $x$ va de $y=-\sqrt{1-x^2}$ a $y=\sqrt{1-x^2}$: $$h(x)=2\sqrt{1-x^2},\qquad \rho(x)=x-(-3)=x+3$$`],
+  ['Planteamiento', String.raw`$$V=2\pi\int_{-1}^{1}(x+3)\cdot2\sqrt{1-x^2}\,dx=4\pi\int_{-1}^{1}x\sqrt{1-x^2}\,dx+12\pi\int_{-1}^{1}\sqrt{1-x^2}\,dx$$`],
+  ['Primera integral', String.raw`$x\sqrt{1-x^2}$ es <b>impar</b> y el intervalo es simétrico; por lo tanto, vale $0$. (Con $u=1-x^2$ queda $-\tfrac13(1-x^2)^{3/2}\Big|_{-1}^{1}=0$.)`],
+  ['Segunda integral', String.raw`$\int_{-1}^{1}\sqrt{1-x^2}\,dx$ es el área del semicírculo de radio $1$: $\dfrac{\pi}{2}$. (Con $x=\operatorname{sen}\theta$: $\int_{-\pi/2}^{\pi/2}\cos^2\theta\,d\theta=\tfrac{\pi}{2}$.)`],
+  ['Resultado', String.raw`$$V=4\pi(0)+12\pi\cdot\frac{\pi}{2}=6\pi^2$$ Pappus: $A=\pi$, $\bar d=3$; por lo tanto, $V=2\pi(3)(\pi)=6\pi^2$ ✓`]]},
+{ en:String.raw`Superficie limitada por la parábola $y^2+4x-6y-11=0$ y la recta $2x+y-9=0$, gira en torno a la recta $y+1=0$.`,
+  ax:{t:'x',c:-1}, st:'h', a:1, b:7, lo:y=>(9-y)/2, hi:y=>5-(y-3)**2/4, m:'Capas cilíndricas', exact:90*PI, res:String.raw`V=90\pi\ u^3`,
+  steps:[
+  ['Completar cuadrados', String.raw`$y^2-6y=(y-3)^2-9$; por lo tanto, $(y-3)^2-9+4x-11=0\Rightarrow(y-3)^2=-4(x-5)$. Es una parábola que abre a la izquierda con vértice en $(5,3)$: $$x=5-\frac{(y-3)^2}{4}$$ Recta: $x=\dfrac{9-y}{2}$.`],
+  ['Intersecciones', String.raw`$5-\dfrac{(y-3)^2}{4}=\dfrac{9-y}{2}$. Se multiplica por $4$: $20-(y^2-6y+9)=18-2y\Rightarrow -y^2+8y-7=0\Rightarrow y^2-8y+7=0\Rightarrow(y-1)(y-7)=0$. Entonces $y=1$ (punto $(4,1)$) y $y=7$ (punto $(1,7)$).`],
+  ['Elección del método', String.raw`Ambas curvas son funciones de $y$; por lo tanto, conviene usar rectángulos horizontales. El eje $y=-1$ también es horizontal; por lo tanto, los rectángulos son paralelos al eje y se usan <b>capas cilíndricas</b>, integrando en $y$.`],
+  ['Radio y altura', String.raw`$\rho(y)=y-(-1)=y+1$. La altura es la curva derecha (parábola) menos la izquierda (recta): $$h(y)=5-\frac{(y-3)^2}{4}-\frac{9-y}{2}=\frac{20-y^2+6y-9-18+2y}{4}=\frac{-y^2+8y-7}{4}$$`],
+  ['Planteamiento', String.raw`$$V=2\pi\int_1^7(y+1)\,\frac{-y^2+8y-7}{4}\,dy=\frac{\pi}{2}\int_1^7(y+1)(-y^2+8y-7)\,dy$$`],
+  ['Desarrollo', String.raw`$(y+1)(-y^2+8y-7)=-y^3+8y^2-7y-y^2+8y-7=-y^3+7y^2+y-7$`],
+  ['Integración', String.raw`$$\int_1^7(-y^3+7y^2+y-7)\,dy=\left[-\frac{y^4}{4}+\frac{7y^3}{3}+\frac{y^2}{2}-7y\right]_1^7$$`],
+  ['Evaluación', String.raw`$F(7)=-\tfrac{2401}{4}+\tfrac{2401}{3}+\tfrac{49}{2}-49=\tfrac{2401}{12}-\tfrac{49}{2}=\tfrac{2107}{12}$. $\;F(1)=-\tfrac14+\tfrac73+\tfrac12-7=-\tfrac{53}{12}$. $\;F(7)-F(1)=\tfrac{2160}{12}=180$. $$V=\frac{\pi}{2}(180)=90\pi$$`]]},
+{ en:String.raw`Superficie limitada por la curva $4x^2+y^2+48x+128=0$, gira en torno a la recta $x-2=0$.`,
+  ax:{t:'y',c:2}, st:'v', a:-8, b:-4, lo:x=>-4*sq(1-(x+6)**2/4), hi:x=>4*sq(1-(x+6)**2/4), m:'Capas cilíndricas', exact:128*PI*PI, res:String.raw`V=128\pi^2\ u^3`,
+  steps:[
+  ['Completar cuadrados', String.raw`$4x^2+48x=4(x^2+12x)=4[(x+6)^2-36]=4(x+6)^2-144$. Se sustituye: $4(x+6)^2-144+y^2+128=0\Rightarrow4(x+6)^2+y^2=16$. Se divide entre $16$: $$\frac{(x+6)^2}{4}+\frac{y^2}{16}=1$$ Es una elipse con centro $(-6,0)$, semieje $2$ en $x$ (de $-8$ a $-4$) y semieje $4$ en $y$.`],
+  ['Elección del método', String.raw`El eje $x=2$ es vertical. Con rectángulos verticales (paralelos al eje) se usan <b>capas cilíndricas</b>, integrando en $x$ de $-8$ a $-4$.`],
+  ['Radio y altura', String.raw`El eje está a la derecha de la región; por lo tanto, $\rho=2-x$. Despejando $y$: $y=\pm4\sqrt{1-\frac{(x+6)^2}{4}}$, y entonces $$h(x)=8\sqrt{1-\frac{(x+6)^2}{4}}$$`],
+  ['Planteamiento', String.raw`$$V=2\pi\int_{-8}^{-4}(2-x)\cdot8\sqrt{1-\frac{(x+6)^2}{4}}\,dx$$`],
+  ['Sustitución', String.raw`$u=x+6$; por lo tanto, $x=u-6$ y $2-x=8-u$. Límites: $-8\to-2$, $\;-4\to2$. $$V=16\pi\int_{-2}^{2}(8-u)\sqrt{1-\frac{u^2}{4}}\,du=128\pi\int_{-2}^{2}\sqrt{1-\frac{u^2}{4}}\,du-16\pi\int_{-2}^{2}u\sqrt{1-\frac{u^2}{4}}\,du$$`],
+  ['Integrales', String.raw`La segunda tiene integrando <b>impar</b>; por lo tanto, vale $0$. Para la primera, con $u=2\operatorname{sen}\theta$, $du=2\cos\theta\,d\theta$: $$\int_{-2}^{2}\sqrt{1-\tfrac{u^2}{4}}\,du=\int_{-\pi/2}^{\pi/2}2\cos^2\theta\,d\theta=2\cdot\frac{\pi}{2}=\pi$$`],
+  ['Resultado', String.raw`$$V=128\pi\cdot\pi=128\pi^2$$ Pappus: $A=\pi ab=\pi(2)(4)=8\pi$, $\bar d=2-(-6)=8$; por lo tanto, $V=2\pi(8)(8\pi)=128\pi^2$ ✓`]]},
+{ en:String.raw`Superficie limitada por la primera arcada de $y=\operatorname{sen}x$, gira en torno a la recta $2x-3\pi=0$.`,
+  ax:{t:'y',c:3*PI/2}, st:'v', a:0, b:PI, lo:x=>0, hi:x=>Math.sin(x), m:'Capas cilíndricas', exact:4*PI*PI, res:String.raw`V=4\pi^2\ u^3`,
+  steps:[
+  ['Región y eje', String.raw`La primera arcada de $\operatorname{sen}x$ va de $x=0$ a $x=\pi$, sobre el eje $X$. El eje es $2x-3\pi=0\Rightarrow x=\dfrac{3\pi}{2}$, una recta vertical a la derecha de la región.`],
+  ['Elección del método', String.raw`Invertir la función ($x=\arcsin y$) resulta poco práctico. Con rectángulos verticales (paralelos al eje vertical) se usan <b>capas cilíndricas</b>, sin necesidad de invertir la función.`],
+  ['Radio y altura', String.raw`$$\rho(x)=\frac{3\pi}{2}-x,\qquad h(x)=\operatorname{sen}x$$`],
+  ['Planteamiento', String.raw`$$V=2\pi\int_0^{\pi}\left(\frac{3\pi}{2}-x\right)\operatorname{sen}x\,dx=3\pi^2\int_0^\pi\operatorname{sen}x\,dx-2\pi\int_0^\pi x\operatorname{sen}x\,dx$$`],
+  ['Primera integral', String.raw`$$\int_0^\pi\operatorname{sen}x\,dx=\big[-\cos x\big]_0^\pi=-\cos\pi+\cos0=1+1=2$$`],
+  ['Segunda integral (por partes)', String.raw`$u=x\Rightarrow du=dx$; $\;dv=\operatorname{sen}x\,dx\Rightarrow v=-\cos x$. $$\int x\operatorname{sen}x\,dx=-x\cos x+\int\cos x\,dx=-x\cos x+\operatorname{sen}x$$ $$\Big[-x\cos x+\operatorname{sen}x\Big]_0^\pi=(-\pi\cos\pi+0)-(0)=\pi$$`],
+  ['Resultado', String.raw`$$V=3\pi^2(2)-2\pi(\pi)=6\pi^2-2\pi^2=4\pi^2$$`]]}
+];
+
+/* ---------- utilidades geométricas ---------- */
+const toW = (p, s, v) => p.st === 'v' ? [s, v] : [v, s];           // (s, valor) -> (x, y)
+function rot(p, [x, y], th) {
+  const c = p.ax.c;
+  if (p.ax.t === 'x') return [x, c + (y - c) * Math.cos(th), (y - c) * Math.sin(th)];
+  return [c + (x - c) * Math.cos(th), y, -(x - c) * Math.sin(th)];
+}
+const perpendicular = p => (p.st === 'v') === (p.ax.t === 'x');      // disco/arandela si es perpendicular
+function regionPolys(p, K = 140) {
+  const hi = [], lo = [];
+  for (let i = 0; i <= K; i++) { const s = p.a + (p.b - p.a) * i / K; hi.push(toW(p, s, p.hi(s))); lo.push(toW(p, s, p.lo(s))); }
+  const polys = [hi, lo];
+  for (const s of [p.a, p.b]) if (Math.abs(p.hi(s) - p.lo(s)) > 1e-9) polys.push([toW(p, s, p.lo(s)), toW(p, s, p.hi(s))]);
+  return { polys, outline: hi.concat(lo.slice().reverse()) };
+}
+function rects(p, n) {
+  const d = (p.b - p.a) / n, out = [];
+  for (let k = 0; k < n; k++) {
+    const s0 = p.a + k * d, s1 = s0 + d, m = (s0 + s1) / 2, l = p.lo(m), h = p.hi(m);
+    const c = [toW(p, s0, l), toW(p, s1, l), toW(p, s1, h), toW(p, s0, h)];
+    out.push({ c, polys: [[c[0], c[1]], [c[1], c[2]], [c[2], c[3]], [c[3], c[0]]], m, l, h, d });
+  }
+  return out;
+}
+const M = 96; // pasos angulares
+function sweep(p, polys, colors) {
+  const pos = [], col = [], idx = [], offs = [];
+  let n = 0;
+  polys.forEach(pl => { offs.push(n); n += pl.length; });
+  for (let j = 0; j <= M; j++) {
+    const th = 2 * PI * j / M;
+    polys.forEach((pl, q) => pl.forEach(pt => { pos.push(...rot(p, pt, th)); if (colors) col.push(...colors[q]); }));
+  }
+  for (let j = 0; j < M; j++) polys.forEach((pl, q) => {
+    for (let i = 0; i < pl.length - 1; i++) {
+      const a = j * n + offs[q] + i, b = a + 1, c2 = a + n, d = b + n;
+      idx.push(a, b, d, a, d, c2);
+    }
+  });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  if (colors) g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  g.userData.perStep = idx.length / M;
+  return g;
+}
+
+/* ---------- escena ---------- */
+const viewer = document.getElementById('viewer');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+viewer.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 2000);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const dl = new THREE.DirectionalLight(0xffffff, 0.75); dl.position.set(5, 8, 10); scene.add(dl);
+const dl2 = new THREE.DirectionalLight(0xffffff, 0.3); dl2.position.set(-6, -4, -8); scene.add(dl2);
+
+function label(txt, color) {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 64;
+  const x = cv.getContext('2d'); x.fillStyle = color; x.font = 'bold 44px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, 32, 34);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false }));
+  return sp;
+}
+function line(pts, color) {
+  const g = new THREE.BufferGeometry().setFromPoints(pts.map(q => new THREE.Vector3(q[0], q[1], q[2] || 0)));
+  return new THREE.Line(g, new THREE.LineBasicMaterial({ color }));
+}
+
+let world = null, st = { th: 0, play: true, hold: 0 }, cur = 0, solidMesh, rectMesh, pivot, rectFaces, regionFace, staticRegion;
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const math = el => renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+
+function build(i) {
+  cur = i; const p = P[i];
+  if (world) { scene.remove(world); world.traverse(o => { o.geometry && o.geometry.dispose(); }); }
+  world = new THREE.Group(); scene.add(world);
+  const { polys, outline } = regionPolys(p);
+
+  // límites para encuadre
+  let mn = [0, 0, 0], mx = [0, 0, 0], Rm = 0;
+  outline.forEach(([x, y]) => { mn[0] = Math.min(mn[0], x); mx[0] = Math.max(mx[0], x); mn[1] = Math.min(mn[1], y); mx[1] = Math.max(mx[1], y);
+    Rm = Math.max(Rm, Math.abs((p.ax.t === 'x' ? y : x) - p.ax.c)); });
+  if (p.ax.t === 'x') { mn[1] = Math.min(mn[1], p.ax.c - Rm); mx[1] = Math.max(mx[1], p.ax.c + Rm); }
+  else { mn[0] = Math.min(mn[0], p.ax.c - Rm); mx[0] = Math.max(mx[0], p.ax.c + Rm); }
+  mn[2] = -Rm; mx[2] = Rm;
+  const L = Math.max(mx[0] - mn[0], mx[1] - mn[1], 2 * Rm, 1);
+
+  // ejes coordenados
+  const pad = L * 0.12, axc = 0x8a8f98;
+  world.add(line([[mn[0] - pad, 0, 0], [mx[0] + pad, 0, 0]], axc));
+  world.add(line([[0, mn[1] - pad, 0], [0, mx[1] + pad, 0]], axc));
+  world.add(line([[0, 0, mn[2] - pad], [0, 0, mx[2] + pad]], 0x5d6168));
+  const ls = L * 0.06;
+  [['x', [mx[0] + pad * 1.4, 0, 0]], ['y', [0, mx[1] + pad * 1.4, 0]], ['z', [0, 0, mx[2] + pad * 1.4]]].forEach(([t, q]) => {
+    const s = label(t, '#9aa0aa'); s.position.set(...q); s.scale.set(ls, ls, 1); world.add(s); });
+
+  // eje de giro
+  const ext = L * 0.75;
+  const axPts = p.ax.t === 'x' ? [[mn[0] - ext * .3, p.ax.c, 0], [mx[0] + ext * .3, p.ax.c, 0]] : [[p.ax.c, mn[1] - ext * .3, 0], [p.ax.c, mx[1] + ext * .3, 0]];
+  const a0 = new THREE.Vector3(...axPts[0]), a1 = new THREE.Vector3(...axPts[1]);
+  const cyl = new THREE.Mesh(new THREE.CylinderGeometry(L * 0.006, L * 0.006, a0.distanceTo(a1), 12), new THREE.MeshBasicMaterial({ color: 0xe5484d }));
+  cyl.position.copy(a0.clone().add(a1).multiplyScalar(0.5)); if (p.ax.t === 'x') cyl.rotation.z = PI / 2; world.add(cyl);
+
+  // sólido barrido (draw range = ángulo actual)
+  solidMesh = new THREE.Mesh(sweep(p, polys), new THREE.MeshPhongMaterial({ color: 0x4f8cff, transparent: true, opacity: 0.38, side: THREE.DoubleSide, depthWrite: false, shininess: 60 }));
+  world.add(solidMesh);
+
+  // región en posición original (tenue) + región que gira
+  const shape = new THREE.Shape(outline.map(([x, y]) => new THREE.Vector2(x, y)));
+  staticRegion = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: 0xf2a93b, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }));
+  world.add(staticRegion);
+  pivot = new THREE.Group(); const child = new THREE.Group();
+  if (p.ax.t === 'x') { pivot.position.set(0, p.ax.c, 0); child.position.set(0, -p.ax.c, 0); }
+  else { pivot.position.set(p.ax.c, 0, 0); child.position.set(-p.ax.c, 0, 0); }
+  pivot.add(child); world.add(pivot);
+  regionFace = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: 0xf2a93b, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
+  child.add(regionFace);
+  child.add(line(outline.concat([outline[0]]), 0xd9861a));
+  pivot.userData.child = child;
+
+  buildRects();
+
+  // cámara
+  const ctr = new THREE.Vector3((mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, 0);
+  controls.target.copy(ctr);
+  camera.position.copy(ctr.clone().add(new THREE.Vector3(0.75, 0.55, 1.35).multiplyScalar(L * 1.25)));
+  camera.near = L / 200; camera.far = L * 50; camera.updateProjectionMatrix();
+
+  // texto
+  document.getElementById('title').textContent = 'Problema ' + (i + 1);
+  document.getElementById('enun').innerHTML = p.en;
+  document.getElementById('tagMethod').textContent = p.m;
+  document.getElementById('tagAxis').textContent = 'Eje: ' + (p.ax.t === 'x' ? (p.ax.c === 0 ? 'X' : 'y = ' + fmt(p.ax.c)) : (p.ax.c === 0 ? 'Y' : 'x = ' + fmt(p.ax.c)));
+  document.getElementById('steps').innerHTML = p.steps.map(([t, s]) => '<li><b class="lab">' + t + '.</b> ' + s + '</li>').join('');
+  document.getElementById('result').innerHTML = 'Resultado: $' + p.res + '\\approx ' + p.exact.toFixed(4) + '\\ u^3$';
+  const nt = document.getElementById('note'); nt.hidden = !p.note; nt.textContent = p.note || '';
+  updateCheck();
+  math(document.querySelector('main'));
+  document.querySelectorAll('nav button').forEach((b, k) => b.classList.toggle('on', k === i));
+  st.th = 0; st.hold = 0; applyVis();
+}
+function fmt(c) { return Math.abs(c - 3 * PI / 2) < 1e-9 ? '3π/2' : String(c); }
+
+function buildRects() {
+  const p = P[cur], n = +document.getElementById('nrect').value, child = pivot.userData.child;
+  if (rectMesh) { world.remove(rectMesh); rectMesh.geometry.dispose(); }
+  if (rectFaces) { child.remove(rectFaces); rectFaces.geometry.dispose(); }
+  const R = rects(p, n), polys = [], colors = [], shapes = [];
+  R.forEach((r, k) => {
+    const c = new THREE.Color().setHSL(0.42 + 0.12 * (k / Math.max(1, n - 1)), 0.6, k % 2 ? 0.45 : 0.55);
+    r.polys.forEach(pl => { polys.push(pl); colors.push([c.r, c.g, c.b]); });
+    shapes.push(new THREE.Shape(r.c.map(([x, y]) => new THREE.Vector2(x, y))));
+  });
+  rectMesh = new THREE.Mesh(sweep(p, polys, colors), new THREE.MeshPhongMaterial({ vertexColors: true, side: THREE.DoubleSide, flatShading: true, transparent: true, opacity: 0.92, shininess: 30 }));
+  world.add(rectMesh);
+  rectFaces = new THREE.Mesh(new THREE.ShapeGeometry(shapes), new THREE.MeshBasicMaterial({ color: 0x1fa877, side: THREE.DoubleSide, transparent: true, opacity: 0.95 }));
+  rectFaces.renderOrder = 2; child.add(rectFaces);
+  document.getElementById('nval').textContent = n;
+  applyVis(); updateCheck();
+}
+
+function numeric(p, n) {          // suma de Riemann con n rectángulos (punto medio)
+  const d = (p.b - p.a) / n, c = p.ax.c; let v = 0;
+  for (let k = 0; k < n; k++) {
+    const m = p.a + (k + .5) * d, l = p.lo(m), h = p.hi(m);
+    if (perpendicular(p)) { const r1 = Math.abs(l - c), r2 = Math.abs(h - c); v += PI * Math.abs(r2 * r2 - r1 * r1) * d; }
+    else v += 2 * PI * Math.abs(m - c) * Math.abs(h - l) * d;
+  }
+  return v;
+}
+function updateCheck() {
+  const p = P[cur], n = +document.getElementById('nrect').value;
+  const kind = perpendicular(p) ? (p.m === 'Discos' ? 'discos' : 'arandelas') : 'capas cilíndricas';
+  document.getElementById('check').innerHTML = `Comprobación: la suma de los ${n} ${kind} de la animación da ≈ <b>${numeric(p, n).toFixed(4)}</b>; con 20 000 da ≈ <b>${numeric(p, 20000).toFixed(4)}</b>; el valor exacto es <b>${p.exact.toFixed(4)}</b>.`;
+}
+function applyVis() {
+  if (!solidMesh) return;
+  solidMesh.visible = document.getElementById('shSolid').checked;
+  const r = document.getElementById('shRect').checked;
+  rectMesh.visible = r; rectFaces.visible = r;
+  const g = document.getElementById('shRegion').checked; regionFace.visible = g; staticRegion.visible = g;
+}
+
+/* ---------- animación ---------- */
+const hud = document.getElementById('hud'), angEl = document.getElementById('ang');
+let last = performance.now();
+function frame(t) {
+  const dt = Math.min(0.05, (t - last) / 1000); last = t;
+  if (st.play) {
+    if (st.th >= 2 * PI) { st.hold += dt; if (st.hold > 1.6) { st.th = 0; st.hold = 0; } }
+    else st.th = Math.min(2 * PI, st.th + dt * (+document.getElementById('spd').value) * PI / 180);
+    angEl.value = Math.round(st.th * 180 / PI);
+  }
+  const steps = Math.round(st.th / (2 * PI) * M);
+  if (solidMesh) {
+    solidMesh.geometry.setDrawRange(0, steps * solidMesh.geometry.userData.perStep);
+    rectMesh.geometry.setDrawRange(0, steps * rectMesh.geometry.userData.perStep);
+    const th = steps / M * 2 * PI;
+    if (P[cur].ax.t === 'x') pivot.rotation.set(th, 0, 0); else pivot.rotation.set(0, th, 0);
+    const p = P[cur], vol = numeric(p, +document.getElementById('nrect').value) * (th / (2 * PI));
+    hud.innerHTML = `θ = ${Math.round(th * 180 / PI)}°<br>${p.m}<br>V barrido ≈ ${vol.toFixed(3)} u³`;
+  }
+  controls.update(); renderer.render(scene, camera); requestAnimationFrame(frame);
+}
+function resize() { const w = viewer.clientWidth, h = viewer.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+function setBg() { renderer.setClearColor(new THREE.Color(css('--canvas') || '#eef0f4')); }
+
+/* ---------- UI ---------- */
+const nav = document.getElementById('nav'), tocProbs = document.getElementById('tocProbs');
+P.forEach((p, i) => {
+  const b = document.createElement('button'); b.innerHTML = `<span>Problema ${i + 1}</span><small>${p.m.split(' ')[0]}</small>`; b.onclick = () => build(i); nav.appendChild(b);
+  const li = document.createElement('li'); li.innerHTML = `<a href="#problemas" data-p="${i}">${i + 1} <b>· ${p.m.split(' ')[0]}</b></a>`; tocProbs.appendChild(li);
+});
+document.addEventListener('click', e => { const a = e.target.closest('a[data-p]'); if (a) build(+a.dataset.p); });
+const playBtn = document.getElementById('play');
+playBtn.onclick = () => { st.play = !st.play; playBtn.textContent = st.play ? '⏸ Pausa' : '▶ Animar'; if (st.play && st.th >= 2 * PI) { st.th = 0; } };
+document.getElementById('reset').onclick = () => { st.th = 0; st.hold = 0; st.play = true; playBtn.textContent = '⏸ Pausa'; };
+angEl.oninput = () => { st.play = false; playBtn.textContent = '▶ Animar'; st.th = angEl.value * PI / 180; };
+document.getElementById('nrect').oninput = buildRects;
+['shSolid', 'shRect', 'shRegion'].forEach(id => document.getElementById(id).onchange = applyVis);
+document.getElementById('themeBtn').onclick = () => {
+  const r = document.documentElement, dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const curT = r.dataset.theme || (dark ? 'dark' : 'light'); r.dataset.theme = curT === 'dark' ? 'light' : 'dark'; setBg(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setBg);
+addEventListener('resize', resize);
+
+math(document.querySelector('.wrap'));
+resize(); setBg(); build(0); requestAnimationFrame(frame);
+</script>
+
+<script>
+/* ===================== MONITORÍA: navegación, graficadores y laboratorios ===================== */
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const PI_ = Math.PI;
+const cssv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+const tx = el => { try { renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); } catch (e) {} };
+const plots = [], scenes = [];
+const MJ = window.math;
+const HAS_MATH = !!(MJ && typeof MJ.parse === 'function');
+
+/* ---------- lectura de funciones ---------- */
+function prep(s) {
+  return String(s).trim()
+    .replace(/(\d),(\d)/g, '$1.$2')
+    .replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/[·×]/g, '*').replace(/[−–]/g, '-')
+    .replace(/\barcsen\b/g, 'asin').replace(/\barcsin\b/g, 'asin').replace(/\barccos\b/g, 'acos').replace(/\barctan\b/g, 'atan')
+    .replace(/\bsen\b/g, 'sin').replace(/\bln\b/g, 'log').replace(/\btg\b/g, 'tan').replace(/\braiz\b/g, 'sqrt');
+}
+function texOf(node) {
+  return node.toTex({ parenthesis: 'auto', implicit: 'hide' }).replace(/\\sin(?![a-z])/g, '\\operatorname{sen}').replace(/~/g, '\\,')
+    .replace(/\d+\.\d{5,}/g, m => ratTex(Number(m)));
+}
+function wrapEval(code, v) {
+  return t => { let r; try { r = code.evaluate({ [v]: t }); } catch (e) { return NaN; }
+    if (typeof r === 'number') return r;
+    if (r && typeof r.re === 'number') return Math.abs(r.im) < 1e-12 ? r.re : NaN;
+    return Number(r); };
+}
+function parse(expr, v) {
+  if (!HAS_MATH) throw new Error('No se pudo cargar la librería math.js. Revisa tu conexión a internet.');
+  if (!String(expr).trim()) throw new Error('Ingrese una expresión.');
+  let node;
+  try { node = MJ.parse(prep(expr)); } catch (e) { throw new Error('No se pudo leer «' + expr + '». Revisa paréntesis y operadores.'); }
+  const bad = [];
+  node.traverse((n, path, parent) => {
+    if (!n.isSymbolNode) return;
+    if (parent && parent.isFunctionNode && parent.fn === n) { if (typeof MJ[n.name] !== 'function') bad.push(n.name + '()'); return; }
+    if (n.name !== v && !['pi', 'e', 'E', 'PI'].includes(n.name)) bad.push(n.name);
+  });
+  if (bad.length) throw new Error('Símbolo desconocido en «' + expr + '»: ' + [...new Set(bad)].join(', ') + '. La variable es ' + v + '.');
+  return { node, fn: wrapEval(node.compile(), v), tex: texOf(node), str: node.toString() };
+}
+function num(s, label) {
+  let v;
+  try { v = MJ.evaluate(prep(s)); } catch (e) { v = NaN; }
+  if (typeof v !== 'number' || !isFinite(v)) throw new Error(label + ': «' + s + '» no es un número válido.');
+  return v;
+}
+function simp(node) { try { return MJ.simplify(node); } catch (e) { return node; } }
+function nice(node) {
+  const ok = r => r && !/sqrt|\.\d{5,}/.test(r.toString()) && r.toString().length <= node.toString().length + 40;
+  try { const r = MJ.rationalize(node); if (ok(r)) return r; } catch (e) {}
+  try {   // π como constante simbólica para poder agrupar términos
+    const sub = node.transform(n => n.isSymbolNode && n.name === 'pi' ? new MJ.SymbolNode('qpi') : n);
+    const r = MJ.rationalize(sub).transform(n => n.isSymbolNode && n.name === 'qpi' ? new MJ.SymbolNode('pi') : n);
+    if (ok(r)) return r;
+  } catch (e) {}
+  return simp(node);
+}
+
+/* ---------- números ---------- */
+function nf(v, d = 4) {
+  if (!isFinite(v)) return '\\text{no definido}';
+  if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v));
+  const s = v.toFixed(d).replace(/0+$/, '').replace(/\.$/, '');
+  return s === '-0' ? '0' : s;
+}
+function rat(v, maxDen = 1000) {
+  if (!isFinite(v)) return null;
+  const sign = v < 0 ? -1 : 1, x = Math.abs(v);
+  let h0 = 0, h1 = 1, k0 = 1, k1 = 0, b = x;
+  for (let i = 0; i < 25; i++) {
+    const a = Math.floor(b), h2 = a * h1 + h0, k2 = a * k1 + k0;
+    if (k2 > maxDen) break;
+    h0 = h1; h1 = h2; k0 = k1; k1 = k2;
+    if (Math.abs(x - h1 / k1) < 1e-9 * Math.max(1, x)) return [sign * h1, k1];
+    if (b - a < 1e-12) break;
+    b = 1 / (b - a);
+  }
+  return null;
+}
+function ratTex(v) { const r = rat(v); if (!r) return nf(v); const [p, q] = r; return q === 1 ? String(p) : (p < 0 ? '-' : '') + '\\frac{' + Math.abs(p) + '}{' + q + '}'; }
+function show(v) { const r = rat(v); if (r) return r[1] === 1 ? '= ' + r[0] : '= ' + ratTex(v) + '\\approx ' + nf(v); return '\\approx ' + nf(v); }
+function piTex(v) {
+  const r = rat(v / PI_); if (!r || r[0] === 0) return null;
+  const [p, q] = r, s = p < 0 ? '-' : '', P = Math.abs(p);
+  return q === 1 ? s + (P === 1 ? '' : P) + '\\pi' : s + '\\frac{' + (P === 1 ? '' : P) + '\\pi}{' + q + '}';
+}
+const par = v => v < 0 ? '\\left(' + ratTex(v) + '\\right)' : ratTex(v);
+
+/* ---------- integración y raíces ---------- */
+function ts(fn, a, b) {               // cuadratura tanh-sinh (doble exponencial)
+  if (!(b > a)) return 0;
+  const c = (a + b) / 2, d = (b - a) / 2, h = 1 / 64; let s = 0;
+  for (let k = -256; k <= 256; k++) {
+    const u = k * h, q = PI_ / 2 * Math.sinh(u), t = Math.tanh(q), w = PI_ / 2 * Math.cosh(u) / (Math.cosh(q) ** 2);
+    if (!(w > 1e-300)) continue;
+    const y = fn(c + d * t);
+    if (isFinite(y)) s += w * y;
+  }
+  return s * h * d;
+}
+function roots(fn, a, b, N = 2000) {
+  const out = [], push = r => { if (!out.some(q => Math.abs(q - r) < 1e-7 * Math.max(1, Math.abs(r)))) out.push(r); };
+  let x0 = a, y0 = fn(a);
+  for (let i = 1; i <= N; i++) {
+    const x1 = a + (b - a) * i / N, y1 = fn(x1);
+    if (isFinite(y0) && isFinite(y1)) {
+      if (y0 === 0) push(x0);
+      else if (y0 * y1 < 0) {
+        let lo = x0, hi = x1, fl = y0;
+        for (let k = 0; k < 90; k++) { const m = (lo + hi) / 2, fm = fn(m); if (!isFinite(fm)) break; if (fl * fm <= 0) hi = m; else { lo = m; fl = fm; } }
+        const r = (lo + hi) / 2, fr = fn(r);
+        if (isFinite(fr) && Math.abs(fr) < 1e-6 * (1 + Math.abs(y0) + Math.abs(y1))) push(r);
+      }
+    }
+    x0 = x1; y0 = y1;
+  }
+  if (fn(b) === 0) push(b);
+  return out.sort((p, q) => p - q).map(r => { const q = rat(r); return q ? q[0] / q[1] : r; });
+}
+const inside = (rs, a, b) => rs.filter(r => r > a + 1e-9 * Math.max(1, Math.abs(a)) && r < b - 1e-9 * Math.max(1, Math.abs(b)));
+function integ(fn, a, b, cuts = []) { const c = [a, ...inside([...cuts].sort((p, q) => p - q), a, b), b]; let s = 0; for (let i = 0; i < c.length - 1; i++) s += ts(fn, c[i], c[i + 1]); return s; }
+
+/* ---------- polinomios (para mostrar la antiderivada exacta) ---------- */
+function polyOf(str, v) {
+  try {
+    const r = MJ.rationalize(str, {}, true);
+    if (r.denominator && r.denominator.toString() !== '1') return null;
+    if (r.variables.length > 1 || (r.variables.length === 1 && r.variables[0] !== v)) return null;
+    let c = (r.coefficients || []).map(Number);
+    if (!c.length) { const k = Number(MJ.evaluate(str, { [v]: 0 })); if (!isFinite(k)) return null; c = [k]; }
+    return c.some(x => !isFinite(x)) ? null : c;
+  } catch (e) { return null; }
+}
+function polyTex(c, v) {
+  let s = '';
+  for (let k = c.length - 1; k >= 0; k--) {
+    const a = c[k]; if (Math.abs(a) < 1e-12) continue;
+    const neg = a < 0, A = Math.abs(a), pw = k === 0 ? '' : k === 1 ? v : v + '^{' + k + '}';
+    const co = (k > 0 && Math.abs(A - 1) < 1e-12) ? '' : ratTex(A);
+    s += (s ? (neg ? ' - ' : ' + ') : (neg ? '-' : '')) + co + pw;
+  }
+  return s || '0';
+}
+const antider = c => [0, ...c.map((a, k) => a / (k + 1))];
+function dTex(node) {      // TeX legible de una derivada: polinomio desarrollado o π·polinomio cuando se puede
+  const str = node.toString(), c1 = polyOf(str, 'x');
+  if (c1) return polyTex(c1, 'x');
+  if (/\bpi\b/.test(str)) {
+    const c2 = polyOf(str.replace(/\bpi\b/g, '1'), 'x');
+    if (c2) {
+      const f = wrapEval(node.compile(), 'x');
+      if ([0.37, 1.3, 2.9].every(x => Math.abs(f(x) - PI_ * pEval(c2, x)) < 1e-9 * (1 + Math.abs(f(x))))) return '\\pi\\left(' + polyTex(c2, 'x') + '\\right)';
+    }
+  }
+  return texOf(node);
+}
+const pEval = (c, x) => c.reduceRight((acc, a) => acc * x + a, 0);
+
+/* ---------- graficador 2D ---------- */
+function niceStep(span, target) { const raw = span / Math.max(2, target), p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; }
+class Plot {
+  constructor(cv, draw) {
+    this.cv = cv; this.ctx = cv.getContext('2d'); this.draw = draw;
+    this.v = { x0: -5, x1: 5, y0: -5, y1: 5 }; this.equal = false; this.want = null; this.onPick = null; this.W = 1; this.H = 1;
+    let drag = null;
+    cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, v: { ...this.v }, moved: false }; try { cv.setPointerCapture(e.pointerId); } catch (_) {} });
+    cv.addEventListener('pointermove', e => {
+      if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.moved && Math.hypot(dx, dy) < 4) return; drag.moved = true; cv.style.cursor = 'grabbing';
+      const sx = (drag.v.x1 - drag.v.x0) / this.W, sy = (drag.v.y1 - drag.v.y0) / this.H;
+      this.v = { x0: drag.v.x0 - dx * sx, x1: drag.v.x1 - dx * sx, y0: drag.v.y0 + dy * sy, y1: drag.v.y1 + dy * sy }; this.render();
+    });
+    cv.addEventListener('pointerup', e => {
+      if (drag && !drag.moved && this.onPick) { const r = cv.getBoundingClientRect(); this.onPick(this.v.x0 + (e.clientX - r.left) / r.width * (this.v.x1 - this.v.x0)); }
+      drag = null; cv.style.cursor = '';
+    });
+    cv.addEventListener('pointercancel', () => { drag = null; cv.style.cursor = ''; });
+    cv.addEventListener('wheel', e => {
+      e.preventDefault(); const r = cv.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height, v = this.v;
+      const wx = v.x0 + px * (v.x1 - v.x0), wy = v.y1 - py * (v.y1 - v.y0), k = e.deltaY > 0 ? 1.15 : 1 / 1.15;
+      this.v = { x0: wx + (v.x0 - wx) * k, x1: wx + (v.x1 - wx) * k, y0: wy + (v.y0 - wy) * k, y1: wy + (v.y1 - wy) * k }; this.render();
+    }, { passive: false });
+    if (window.ResizeObserver) new ResizeObserver(() => this.render()).observe(cv);
+    plots.push(this);
+  }
+  fit(xa, xb, ya, yb) { this.want = { xa, xb, ya, yb }; this.render(); }
+  size() {
+    const r = this.cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+    const W = Math.max(1, Math.round(r.width * d)), H = Math.max(1, Math.round(r.height * d));
+    if (this.cv.width !== W || this.cv.height !== H) { this.cv.width = W; this.cv.height = H; }
+    this.d = d; this.W = Math.max(1, r.width); this.H = Math.max(1, r.height);
+  }
+  applyWant() {
+    let { xa, xb, ya, yb } = this.want; this.want = null;
+    if (!(xb > xa)) { xa -= 1; xb += 1; } if (!(yb > ya)) { ya -= 1; yb += 1; }
+    const px = (xb - xa) * 0.06, py = (yb - ya) * 0.08; xa -= px; xb += px; ya -= py; yb += py;
+    if (this.equal) { const u = Math.max((xb - xa) / this.W, (yb - ya) / this.H), cx = (xa + xb) / 2, cy = (ya + yb) / 2; xa = cx - u * this.W / 2; xb = cx + u * this.W / 2; ya = cy - u * this.H / 2; yb = cy + u * this.H / 2; }
+    this.v = { x0: xa, x1: xb, y0: ya, y1: yb };
+  }
+  X(x) { return (x - this.v.x0) / (this.v.x1 - this.v.x0) * this.W; }
+  Y(y) { return (this.v.y1 - y) / (this.v.y1 - this.v.y0) * this.H; }
+  render() {
+    if (!this.cv.isConnected || this.cv.offsetParent === null) return;
+    this.size(); if (this.want) this.applyWant();
+    const c = this.ctx; c.setTransform(this.d, 0, 0, this.d, 0, 0);
+    c.fillStyle = cssv('--canvas') || '#eef0f4'; c.fillRect(0, 0, this.W, this.H);
+    this.grid(); try { this.draw(this); } catch (e) { console.error(e); }
+  }
+  grid() {
+    const c = this.ctx, v = this.v, sx = niceStep(v.x1 - v.x0, this.W / 80), sy = niceStep(v.y1 - v.y0, this.H / 60);
+    const lineC = cssv('--line') || '#ddd', mut = cssv('--muted') || '#777';
+    c.lineWidth = 1; c.strokeStyle = lineC; c.beginPath();
+    for (let k = Math.ceil(v.x0 / sx); k * sx <= v.x1; k++) { const X = Math.round(this.X(k * sx)) + .5; c.moveTo(X, 0); c.lineTo(X, this.H); }
+    for (let k = Math.ceil(v.y0 / sy); k * sy <= v.y1; k++) { const Y = Math.round(this.Y(k * sy)) + .5; c.moveTo(0, Y); c.lineTo(this.W, Y); }
+    c.stroke();
+    c.strokeStyle = mut; c.lineWidth = 1.4; c.beginPath();
+    const X0 = this.X(0), Y0 = this.Y(0);
+    if (X0 >= 0 && X0 <= this.W) { c.moveTo(X0, 0); c.lineTo(X0, this.H); }
+    if (Y0 >= 0 && Y0 <= this.H) { c.moveTo(0, Y0); c.lineTo(this.W, Y0); }
+    c.stroke();
+    c.fillStyle = mut; c.font = '11px system-ui,sans-serif';
+    const dx = Math.max(0, -Math.floor(Math.log10(sx) + 1e-9)), dy = Math.max(0, -Math.floor(Math.log10(sy) + 1e-9));
+    const ly = Math.min(Math.max(Y0 + 13, 13), this.H - 4), lx = Math.min(Math.max(X0 + 4, 4), this.W - 30);
+    c.textAlign = 'center';
+    for (let k = Math.ceil(v.x0 / sx); k * sx <= v.x1; k++) if (k !== 0) c.fillText((k * sx).toFixed(dx), this.X(k * sx), ly);
+    c.textAlign = 'left';
+    for (let k = Math.ceil(v.y0 / sy); k * sy <= v.y1; k++) if (k !== 0) c.fillText((k * sy).toFixed(dy), lx, this.Y(k * sy) - 3);
+  }
+  path(gen, t0, t1, N, color, w = 2.2, dash) {
+    const c = this.ctx; c.strokeStyle = color; c.lineWidth = w; c.setLineDash(dash || []); c.beginPath();
+    let pen = false, prevY = null;
+    for (let i = 0; i <= N; i++) {
+      const t = t0 + (t1 - t0) * i / N, p = gen(t);
+      if (!p || !isFinite(p[0]) || !isFinite(p[1])) { pen = false; continue; }
+      const X = this.X(p[0]), Y = this.Y(p[1]);
+      if (Math.abs(X) > 1e5 || Math.abs(Y) > 1e5 || (pen && prevY !== null && Math.abs(Y - prevY) > this.H * 1.5)) { pen = false; prevY = null; continue; }
+      if (pen) c.lineTo(X, Y); else c.moveTo(X, Y);
+      pen = true; prevY = Y;
+    }
+    c.stroke(); c.setLineDash([]);
+  }
+  curve(fn, color, w, dash) { this.path(x => [x, fn(x)], this.v.x0, this.v.x1, Math.ceil(this.W * 2), color, w, dash); }
+  curveY(fn, color, w, dash) { this.path(y => [fn(y), y], this.v.y0, this.v.y1, Math.ceil(this.H * 2), color, w, dash); }
+  seg(x0, y0, x1, y1, color, w = 1.5, dash) { const c = this.ctx; c.strokeStyle = color; c.lineWidth = w; c.setLineDash(dash || []); c.beginPath(); c.moveTo(this.X(x0), this.Y(y0)); c.lineTo(this.X(x1), this.Y(y1)); c.stroke(); c.setLineDash([]); }
+  vline(x, color, w, dash) { this.seg(x, this.v.y0, x, this.v.y1, color, w, dash); }
+  hline(y, color, w, dash) { this.seg(this.v.x0, y, this.v.x1, y, color, w, dash); }
+  lineMB(m, b, color, w, dash) { this.seg(this.v.x0, m * this.v.x0 + b, this.v.x1, m * this.v.x1 + b, color, w, dash); }
+  poly(pts, fill, stroke, w = 1) {
+    if (pts.length < 3) return; const c = this.ctx; c.beginPath();
+    pts.forEach((p, i) => { const X = this.X(p[0]), Y = this.Y(p[1]); i ? c.lineTo(X, Y) : c.moveTo(X, Y); }); c.closePath();
+    if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.strokeStyle = stroke; c.lineWidth = w; c.stroke(); }
+  }
+  dot(x, y, color, r = 5) { if (!isFinite(x) || !isFinite(y)) return; const c = this.ctx; c.beginPath(); c.arc(this.X(x), this.Y(y), r, 0, 2 * PI_); c.fillStyle = color; c.fill(); c.lineWidth = 2; c.strokeStyle = cssv('--card') || '#fff'; c.stroke(); }
+  text(x, y, s, color, dx = 6, dy = -6) { if (!isFinite(x) || !isFinite(y)) return; const c = this.ctx; c.font = '600 13px system-ui,sans-serif'; c.fillStyle = color; c.textAlign = 'left'; c.fillText(s, this.X(x) + dx, this.Y(y) + dy); }
+  legend(items) {
+    const c = this.ctx; c.font = '12px system-ui,sans-serif'; const w = Math.max(...items.map(i => c.measureText(i[0]).width)) + 34, h = items.length * 18 + 10;
+    c.fillStyle = 'rgba(0,0,0,.55)'; c.beginPath(); c.roundRect ? c.roundRect(8, 8, w, h, 8) : c.rect(8, 8, w, h); c.fill();
+    items.forEach(([t, col, dash], i) => { const y = 22 + i * 18; c.strokeStyle = col; c.lineWidth = 3; c.setLineDash(dash || []); c.beginPath(); c.moveTo(16, y - 4); c.lineTo(32, y - 4); c.stroke(); c.setLineDash([]); c.fillStyle = '#fff'; c.textAlign = 'left'; c.fillText(t, 38, y); });
+  }
+}
+const COL = { f: '#d9861a', g: '#8b5cf6', rectF: 'rgba(56,199,147,.30)', rectS: '#1f8a5e', reg: 'rgba(242,169,59,.32)', neg: 'rgba(229,72,77,.22)', tan: '#2f6fde', nor: '#e5484d', sec: '#7a7f88', der: '#8b5cf6', ok: '#1f8a4c' };
+const fixLt = h => h.replace(/\$\$[\s\S]*?\$\$|\$[^$]*\$/g, m => m.replace(/</g, '\\lt ').replace(/>/g, '\\gt '));
+function stepsHTML(el, T) { el.innerHTML = T.map(([t, s]) => '<li><b class="lab">' + t + '.</b> ' + fixLt(s) + '</li>').join(''); tx(el); }
+function setRes(el, html) { el.innerHTML = fixLt(html); tx(el); }
+function robustRange(vals) { const v = vals.filter(isFinite).sort((p, q) => p - q); if (!v.length) return [-1, 1]; const k = Math.floor(v.length * 0.02); return [v[k], v[v.length - 1 - k]]; }
+
+/* =============================================================
+   ÁREA BAJO LA CURVA Y ÁREA ENTRE CURVAS
+   ============================================================= */
+function areaLab(P, between) {
+  let S = null;
+  const plot = new Plot($(P + '-cv'), draw), varEl = $(P + '-var');
+  const ex = between ? { v: 'x', f: '4x-x^2', g: 'x', a: '0', b: '3', n: 10 } : { v: 'x', f: 'x^2+1', a: '0', b: '2', n: 8 };
+  function labels() {
+    const v = varEl.value;
+    if (between) { $(P + '-flab').textContent = v === 'x' ? 'Curva 1: y = f(x)' : 'Curva 1: x = f(y)'; $(P + '-glab').textContent = v === 'x' ? 'Curva 2: y = g(x)' : 'Curva 2: x = g(y)'; }
+    else $(P + '-flab').textContent = v === 'x' ? 'y = f(x) =' : 'x = f(y) =';
+  }
+  function riemann(n) {
+    const { a, b, h } = S, d = (b - a) / n, m = $(P + '-m').value, pts = []; let sum = 0;
+    for (let i = 0; i < n; i++) { const s0 = a + i * d, s = m === 'l' ? s0 : m === 'r' ? s0 + d : s0 + d / 2, y = h(s); pts.push({ s0, s1: s0 + d, s }); if (isFinite(y)) sum += Math.abs(y) * d; }
+    return { sum, d, pts };
+  }
+  function compute(refit = true) {
+    $(P + '-err').textContent = ''; labels(); $(P + '-nv').textContent = $(P + '-n').value;
+    let v, f, g, a, b;
+    try {
+      v = varEl.value; f = parse($(P + '-f').value, v); g = between ? parse($(P + '-g').value, v) : null;
+      a = num($(P + '-a').value, 'a'); b = num($(P + '-b').value, 'b');
+      if (!(b > a)) throw new Error('Los límites deben cumplir a < b.');
+    } catch (e) { $(P + '-err').textContent = e.message; return; }
+    const h = between ? (s => f.fn(s) - g.fn(s)) : f.fn;
+    let bad = 0; for (let i = 0; i <= 400; i++) if (!isFinite(h(a + (b - a) * i / 400))) bad++;
+    if (bad > 3) $(P + '-err').textContent = 'Atención: la función no está definida (o no es finita) en parte de [a, b]. El resultado puede no tener sentido.';
+    const rts = inside(roots(h, a, b), a, b), cuts = [a, ...rts, b], pieces = [];
+    for (let i = 0; i < cuts.length - 1; i++) { const lo = cuts[i], hi = cuts[i + 1], val = ts(h, lo, hi); pieces.push({ lo, hi, val, sg: Math.sign(h((lo + hi) / 2)) || Math.sign(val) || 1 }); }
+    S = { v, f, g, a, b, h, rts, pieces, signed: pieces.reduce((s, p) => s + p.val, 0), area: pieces.reduce((s, p) => s + Math.abs(p.val), 0) };
+    if (refit) {
+      const span = b - a, s0 = a - span * 0.2, s1 = b + span * 0.2, vals = [0];
+      for (let i = 0; i <= 300; i++) { const s = s0 + (s1 - s0) * i / 300; vals.push(f.fn(s)); if (g) vals.push(g.fn(s)); }
+      const [lo, hi] = robustRange(vals), vlo = Math.min(lo, 0), vhi = Math.max(hi, 0);
+      if (v === 'x') plot.fit(s0, s1, vlo, vhi); else plot.fit(vlo, vhi, s0, s1);
+    } else plot.render();
+    steps();
+  }
+  function draw(pl) {
+    if (!S) return;
+    const { v, f, g, a, b } = S, W = (s, val) => v === 'x' ? [s, val] : [val, s], base = between ? g.fn : () => 0;
+    S.pieces.forEach(p => {
+      const pts = [], N = 160;
+      for (let i = 0; i <= N; i++) { const s = p.lo + (p.hi - p.lo) * i / N, y = f.fn(s); if (isFinite(y)) pts.push(W(s, y)); }
+      for (let i = N; i >= 0; i--) { const s = p.lo + (p.hi - p.lo) * i / N, y = base(s); if (isFinite(y)) pts.push(W(s, y)); }
+      pl.poly(pts, (!between && p.sg < 0) ? COL.neg : COL.reg);
+    });
+    riemann(+$(P + '-n').value).pts.forEach(r => {
+      const top = f.fn(r.s), bot = base(r.s); if (!isFinite(top) || !isFinite(bot)) return;
+      pl.poly([W(r.s0, bot), W(r.s1, bot), W(r.s1, top), W(r.s0, top)], COL.rectF, COL.rectS, 1);
+    });
+    const mut = cssv('--muted');
+    if (v === 'x') { pl.vline(a, mut, 1.2, [5, 4]); pl.vline(b, mut, 1.2, [5, 4]); } else { pl.hline(a, mut, 1.2, [5, 4]); pl.hline(b, mut, 1.2, [5, 4]); }
+    const drawF = (fn, col) => v === 'x' ? pl.curve(fn, col) : pl.curveY(fn, col);
+    drawF(f.fn, COL.f); if (between) drawF(g.fn, COL.g);
+    S.rts.forEach(r => { const p = W(r, f.fn(r)); pl.dot(p[0], p[1], '#e5484d', 4); });
+    const items = [[(v === 'x' ? 'y = f(x)' : 'x = f(y)'), COL.f]]; if (between) items.push([(v === 'x' ? 'y = g(x)' : 'x = g(y)'), COL.g]); items.push(['rectángulos (n = ' + $(P + '-n').value + ')', COL.rectS]);
+    pl.legend(items);
+  }
+  function steps() {
+    const { v, f, g, a, b, pieces, rts, signed, area } = S, dv = '\\,d' + v, A_ = ratTex(a), B_ = ratTex(b), n = +$(P + '-n').value;
+    const T = [], other = v === 'x' ? 'y' : 'x';
+    const integrand = between ? '\\left[' + f.tex + '-\\left(' + g.tex + '\\right)\\right]' : '\\left(' + f.tex + '\\right)';
+    const hname = between ? 'f(' + v + ')-g(' + v + ')' : 'f(' + v + ')';
+    if (between) T.push(['Datos', 'Curvas $' + other + '=f(' + v + ')=' + f.tex + '$ y $' + other + '=g(' + v + ')=' + g.tex + '$, en el intervalo $[' + A_ + ',\\,' + B_ + ']$. Se usan rectángulos ' + (v === 'x' ? 'verticales' : 'horizontales') + ' de ancho $d' + v + '$, cuya altura es la distancia entre las curvas: ' + (v === 'x' ? '«curva de arriba − curva de abajo»' : '«curva de la derecha − curva de la izquierda»') + '.']);
+    else T.push(['Datos', 'Curva $' + other + '=f(' + v + ')=' + f.tex + '$ en el intervalo $[' + A_ + ',\\,' + B_ + ']$. Se usan rectángulos ' + (v === 'x' ? 'verticales (entre la curva y el eje $X$)' : 'horizontales (entre la curva y el eje $Y$)') + ' de ancho $d' + v + '$.']);
+    if (pieces.length === 1) {
+      const p = pieces[0];
+      if (between) T.push(['Planteamiento', (p.sg > 0 ? 'En todo el intervalo $f\\ge g$' : 'En todo el intervalo $g\\ge f$') + '; por lo tanto, la altura de cada rectángulo es ' + (p.sg > 0 ? '$f-g$' : '$g-f$') + ': $$A=\\int_{' + A_ + '}^{' + B_ + '}' + (p.sg > 0 ? integrand : '\\left[' + g.tex + '-\\left(' + f.tex + '\\right)\\right]') + dv + '$$']);
+      else T.push(['Planteamiento', p.sg > 0 ? 'La función es positiva en el intervalo; por lo tanto, el área es directamente la integral: $$A=\\int_{' + A_ + '}^{' + B_ + '}' + integrand + dv + '$$' : 'La curva queda del lado negativo en todo el intervalo; por lo tanto, el área es el opuesto de la integral: $$A=-\\int_{' + A_ + '}^{' + B_ + '}' + integrand + dv + '$$']);
+    } else {
+      const terms = pieces.map((p, i) => (p.sg < 0 ? '-' : (i ? '+' : '')) + '\\int_{' + ratTex(p.lo) + '}^{' + ratTex(p.hi) + '}' + integrand + dv).join('');
+      T.push(['Cambio de signo', '$' + hname + '$ cambia de signo en ' + rts.map(r => '$' + v + '=' + ratTex(r) + '$').join(', ') + (between ? ' (las curvas se cruzan)' : '') + '. Se separa la integral y se cambia el signo de los tramos negativos para sumar áreas positivas: $$A=\\int_{' + A_ + '}^{' + B_ + '}\\left|' + hname + '\\right|' + dv + '=' + terms + '$$']);
+    }
+    const R1 = riemann(n), d = (b - a) / n, mName = { m: 'el punto medio', l: 'el extremo izquierdo', r: 'el extremo derecho' }[$(P + '-m').value];
+    const conv = [10, 100, 1000].map(k => { const sv = S; const dd = (b - a) / k; let s = 0; for (let i = 0; i < k; i++) { const y = sv.h(a + (i + .5) * dd); if (isFinite(y)) s += Math.abs(y) * dd; } return 'n=' + k + ':\\ ' + nf(s, 6); });
+    T.push(['Suma de Riemann', 'Con $n=' + n + '$ rectángulos, $\\Delta ' + v + '=\\dfrac{' + B_ + '-' + par(a) + '}{' + n + '}=' + nf(d, 6) + '$, y la altura se toma en ' + mName + ' de cada subintervalo: $$A\\approx\\sum_{i=1}^{' + n + '}\\left|' + hname.replace(new RegExp(v, 'g'), v + '_i^*') + '\\right|\\,\\Delta ' + v + '=' + nf(R1.sum, 6) + '$$ Al aumentar $n$ (punto medio): $' + conv.join(',\\quad ') + '$.']);
+    const c = polyOf(between ? '(' + f.str + ')-(' + g.str + ')' : f.str, v);
+    if (c) {
+      const Fc = antider(c), F = x => pEval(Fc, x);
+      const ev = pieces.map(p => '$F(' + ratTex(p.hi) + ')-F(' + ratTex(p.lo) + ')=' + ratTex(F(p.hi)) + '-' + par(F(p.lo)) + '=' + ratTex(p.val) + '$').join('; ');
+      T.push(['Antiderivada', (between ? 'Se simplifica el integrando: $' + hname + '=' + polyTex(c, v) + '$. ' : '') + 'Integrando término a término con la regla de la potencia: $$F(' + v + ')=\\int\\left(' + polyTex(c, v) + '\\right)' + dv + '=' + polyTex(Fc, v) + '$$']);
+      T.push(['Regla de Barrow', ev + (pieces.length > 1 ? '. Se suman los valores absolutos: $A=' + pieces.map(p => ratTex(Math.abs(p.val))).join('+') + '$.' : '.')]);
+    } else {
+      T.push(['Cálculo de la integral', 'El integrando no es un polinomio; por lo tanto, la integral se evalúa con un método numérico de alta precisión (cuadratura tanh-sinh, error menor que $10^{-10}$): ' + pieces.map(p => '$\\int_{' + ratTex(p.lo) + '}^{' + ratTex(p.hi) + '}' + integrand + dv + '\\approx' + nf(p.val, 6) + '$').join('; ') + '.']);
+    }
+    stepsHTML($(P + '-steps'), T);
+    let res = 'Área: $A' + show(area) + '\\ u^2$';
+    if (!between && Math.abs(signed - area) > 1e-9) res += '<br><span style="font-weight:500">Integral definida (con signo): $\\int_{' + A_ + '}^{' + B_ + '}f(' + v + ')' + dv + show(signed) + '$</span>';
+    setRes($(P + '-res'), res);
+  }
+  $(P + '-go').onclick = () => compute(true);
+  $(P + '-ex').onclick = () => { varEl.value = ex.v; $(P + '-f').value = ex.f; if (between) $(P + '-g').value = ex.g; $(P + '-a').value = ex.a; $(P + '-b').value = ex.b; $(P + '-n').value = ex.n; $(P + '-m').value = 'm'; compute(true); };
+  $(P + '-n').oninput = () => { if (!S) return; $(P + '-nv').textContent = $(P + '-n').value; plot.render(); steps(); };
+  $(P + '-m').onchange = () => { if (S) { plot.render(); steps(); } };
+  varEl.onchange = labels;
+  [P + '-f', P + '-a', P + '-b'].concat(between ? [P + '-g'] : []).forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') compute(true); }));
+  if (between) $(P + '-int').onclick = () => {
+    $(P + '-err').textContent = '';
+    try {
+      const v = varEl.value, f = parse($(P + '-f').value, v), g = parse($(P + '-g').value, v);
+      const rs = roots(s => f.fn(s) - g.fn(s), -20, 20, 8000);
+      if (rs.length < 2) throw new Error('No se encontraron dos puntos de intersección entre ' + v + ' = −20 y ' + v + ' = 20. Ingrese los límites manualmente.');
+      $(P + '-a').value = nf(rs[0], 6); $(P + '-b').value = nf(rs[rs.length - 1], 6); compute(true);
+    } catch (e) { $(P + '-err').textContent = e.message; }
+  };
+  labels(); compute(true);
+  return plot;
+}
+
+/* =============================================================
+   ESCENAS 3D (reutilizan el motor del Ejercicio 26)
+   ============================================================= */
+function scene3(el) {
+  const r = new THREE.WebGLRenderer({ antialias: true }); r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); el.prepend(r.domElement);
+  const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(45, 1, 0.01, 5000), ctl = new THREE.OrbitControls(cam, r.domElement);
+  ctl.enableDamping = true;
+  sc.add(new THREE.AmbientLight(0xffffff, 0.55));
+  const d1 = new THREE.DirectionalLight(0xffffff, 0.75); d1.position.set(5, 8, 10); sc.add(d1);
+  const d2 = new THREE.DirectionalLight(0xffffff, 0.3); d2.position.set(-6, -4, -8); sc.add(d2);
+  const o = { r, sc, cam, ctl, el, tick: null,
+    size() { const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return; r.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); },
+    bg() { r.setClearColor(new THREE.Color(cssv('--canvas') || '#eef0f4')); },
+    look(ctr, L, dir = [0.75, 0.55, 1.35]) { ctl.target.copy(ctr); cam.position.copy(ctr.clone().add(new THREE.Vector3(...dir).multiplyScalar(L))); cam.near = L / 300; cam.far = L * 80; cam.updateProjectionMatrix(); } };
+  if (window.ResizeObserver) new ResizeObserver(() => o.size()).observe(el);
+  o.bg(); o.size(); scenes.push(o); return o;
+}
+function disposeGroup(g) { g.traverse(q => { if (q.geometry) q.geometry.dispose(); if (q.material && q.material.userData && q.material.userData.own) q.material.dispose(); }); }
+
+/* =============================================================
+   SÓLIDO DE REVOLUCIÓN PERSONALIZADO (3D)
+   ============================================================= */
+function solidLab() {
+  const o = scene3($('s3-view'));
+  const st = { p: null, world: null, solid: null, rect: null, pivot: null, rf: null, th: 0, play: true, hold: 0, dV: null, perp: true, m: '' };
+  function labels() {
+    const v = $('s3-var').value, o2 = v === 'x' ? 'y' : 'x';
+    $('s3-flab').textContent = 'Curva 1: ' + o2 + ' = f(' + v + ')'; $('s3-glab').textContent = 'Curva 2: ' + o2 + ' = g(' + v + ')';
+  }
+  function compute() {
+    $('s3-err').textContent = ''; labels();
+    let v, f, g, a, b, k, axH;
+    try {
+      v = $('s3-var').value; f = parse($('s3-f').value, v); g = parse($('s3-g').value, v);
+      a = num($('s3-a').value, 'a'); b = num($('s3-b').value, 'b'); k = num($('s3-k').value, 'k'); axH = $('s3-ax').value === 'h';
+      if (!(b > a)) throw new Error('Los límites deben cumplir a < b.');
+      for (let i = 0; i <= 200; i++) { const s = a + (b - a) * i / 200; if (!isFinite(f.fn(s)) || !isFinite(g.fn(s))) throw new Error('Alguna curva no está definida en ' + v + ' = ' + nf(s) + '. Ajusta los límites.'); }
+    } catch (e) { $('s3-err').textContent = e.message; return; }
+    const F = f.fn, G = g.fn, sT = v === 'x' ? 'v' : 'h', axT = axH ? 'x' : 'y';
+    const p = { ax: { t: axT, c: k }, st: sT, a, b, lo: s => Math.min(F(s), G(s)), hi: s => Math.max(F(s), G(s)) };
+    const perp = (sT === 'v') === (axT === 'x');
+    let disc = true, cross = false;
+    for (let i = 0; i <= 200; i++) { const s = a + (b - a) * i / 200, u = F(s) - k, w = G(s) - k; if (u * w < -1e-12) cross = true; if (Math.min(Math.abs(u), Math.abs(w)) > 1e-9 && u * w > 0) disc = false; }
+    const dV = perp ? (s => { const u = F(s) - k, w = G(s) - k, R1 = Math.max(Math.abs(u), Math.abs(w)), r1 = u * w < 0 ? 0 : Math.min(Math.abs(u), Math.abs(w)); return PI_ * (R1 * R1 - r1 * r1); })
+                    : (s => 2 * PI_ * Math.abs(s - k) * Math.abs(F(s) - G(s)));
+    const cuts = [...roots(s => F(s) - G(s), a, b), ...roots(s => F(s) - k, a, b), ...roots(s => G(s) - k, a, b), k];
+    const V = integ(dV, a, b, cuts);
+    Object.assign(st, { p, perp, dV, V, f, g, v, k, a, b, axH, disc, cross, m: perp ? (disc ? 'Discos' : 'Arandelas') : 'Capas cilíndricas' });
+    build3(); steps(); st.th = 0; st.hold = 0;
+  }
+  function riem(n) { const { a, b, dV } = st, d = (b - a) / n; let s = 0; for (let i = 0; i < n; i++) { const y = dV(a + (i + .5) * d); if (isFinite(y)) s += y * d; } return s; }
+  function build3() {
+    const p = st.p;
+    if (st.world) { o.sc.remove(st.world); disposeGroup(st.world); }
+    const world = new THREE.Group(); o.sc.add(world); st.world = world;
+    const { polys, outline } = regionPolys(p);
+    let mn = [0, 0, 0], mx = [0, 0, 0], Rm = 0;
+    outline.forEach(([x, y]) => { mn[0] = Math.min(mn[0], x); mx[0] = Math.max(mx[0], x); mn[1] = Math.min(mn[1], y); mx[1] = Math.max(mx[1], y); Rm = Math.max(Rm, Math.abs((p.ax.t === 'x' ? y : x) - p.ax.c)); });
+    if (p.ax.t === 'x') { mn[1] = Math.min(mn[1], p.ax.c - Rm); mx[1] = Math.max(mx[1], p.ax.c + Rm); } else { mn[0] = Math.min(mn[0], p.ax.c - Rm); mx[0] = Math.max(mx[0], p.ax.c + Rm); }
+    mn[2] = -Rm; mx[2] = Rm;
+    const L = Math.max(mx[0] - mn[0], mx[1] - mn[1], 2 * Rm, 1), pad = L * 0.12;
+    world.add(line([[mn[0] - pad, 0, 0], [mx[0] + pad, 0, 0]], 0x8a8f98));
+    world.add(line([[0, mn[1] - pad, 0], [0, mx[1] + pad, 0]], 0x8a8f98));
+    world.add(line([[0, 0, mn[2] - pad], [0, 0, mx[2] + pad]], 0x5d6168));
+    const ls = L * 0.06;
+    [['x', [mx[0] + pad * 1.4, 0, 0]], ['y', [0, mx[1] + pad * 1.4, 0]], ['z', [0, 0, mx[2] + pad * 1.4]]].forEach(([t, q]) => { const s = label(t, '#9aa0aa'); s.position.set(...q); s.scale.set(ls, ls, 1); world.add(s); });
+    const ext = L * 0.75, axPts = p.ax.t === 'x' ? [[mn[0] - ext * .3, p.ax.c, 0], [mx[0] + ext * .3, p.ax.c, 0]] : [[p.ax.c, mn[1] - ext * .3, 0], [p.ax.c, mx[1] + ext * .3, 0]];
+    const a0 = new THREE.Vector3(...axPts[0]), a1 = new THREE.Vector3(...axPts[1]);
+    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(L * 0.006, L * 0.006, a0.distanceTo(a1), 12), new THREE.MeshBasicMaterial({ color: 0xe5484d }));
+    cyl.position.copy(a0.clone().add(a1).multiplyScalar(0.5)); if (p.ax.t === 'x') cyl.rotation.z = PI_ / 2; world.add(cyl);
+    st.solid = new THREE.Mesh(sweep(p, polys), new THREE.MeshPhongMaterial({ color: 0x4f8cff, transparent: true, opacity: 0.38, side: THREE.DoubleSide, depthWrite: false, shininess: 60 }));
+    world.add(st.solid);
+    const shape = new THREE.Shape(outline.map(([x, y]) => new THREE.Vector2(x, y)));
+    world.add(new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: 0xf2a93b, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false })));
+    const pivot = new THREE.Group(), child = new THREE.Group();
+    if (p.ax.t === 'x') { pivot.position.set(0, p.ax.c, 0); child.position.set(0, -p.ax.c, 0); } else { pivot.position.set(p.ax.c, 0, 0); child.position.set(-p.ax.c, 0, 0); }
+    pivot.add(child); world.add(pivot); st.pivot = pivot; st.child = child;
+    child.add(new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: 0xf2a93b, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false })));
+    child.add(line(outline.concat([outline[0]]), 0xd9861a));
+    buildRects();
+    o.look(new THREE.Vector3((mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, 0), L * 1.25);
+  }
+  function buildRects() {
+    const p = st.p, n = +$('s3-n').value; $('s3-nv').textContent = n;
+    if (st.rect) { st.world.remove(st.rect); st.rect.geometry.dispose(); }
+    if (st.rf) { st.child.remove(st.rf); st.rf.geometry.dispose(); }
+    const R = rects(p, n), polys = [], colors = [], shapes = [];
+    R.forEach((r, i) => { const c = new THREE.Color().setHSL(0.42 + 0.12 * (i / Math.max(1, n - 1)), 0.6, i % 2 ? 0.45 : 0.55); r.polys.forEach(pl => { polys.push(pl); colors.push([c.r, c.g, c.b]); }); shapes.push(new THREE.Shape(r.c.map(([x, y]) => new THREE.Vector2(x, y)))); });
+    st.rect = new THREE.Mesh(sweep(p, polys, colors), new THREE.MeshPhongMaterial({ vertexColors: true, side: THREE.DoubleSide, flatShading: true, transparent: true, opacity: 0.92, shininess: 30 }));
+    st.world.add(st.rect);
+    st.rf = new THREE.Mesh(new THREE.ShapeGeometry(shapes), new THREE.MeshBasicMaterial({ color: 0x1fa877, side: THREE.DoubleSide, transparent: true, opacity: 0.95 }));
+    st.rf.renderOrder = 2; st.child.add(st.rf);
+    vis();
+  }
+  function vis() { if (!st.solid) return; st.solid.visible = $('s3-shS').checked; const r = $('s3-shR').checked; st.rect.visible = r; st.rf.visible = r; }
+  function distTex(tex, k, sg) { // sg>0: (expr - k); sg<0: (k - expr)
+    if (sg >= 0) return k === 0 ? tex : tex + (k > 0 ? '-' + ratTex(k) : '+' + ratTex(-k));
+    return k === 0 ? '-\\left(' + tex + '\\right)' : ratTex(k) + '-\\left(' + tex + '\\right)';
+  }
+  function distStr(str, k, sg) { return sg >= 0 ? '(' + str + ')-(' + k + ')' : '(' + k + ')-(' + str + ')'; }
+  function steps() {
+    const { f, g, v, k, a, b, axH, perp, V, m, disc, cross } = st, mid = (a + b) / 2, dv = '\\,d' + v, A_ = ratTex(a), B_ = ratTex(b);
+    const o2 = v === 'x' ? 'y' : 'x', axName = axH ? (k === 0 ? 'el eje $X$' : 'la recta $y=' + ratTex(k) + '$') : (k === 0 ? 'el eje $Y$' : 'la recta $x=' + ratTex(k) + '$');
+    const T = [];
+    T.push(['Región', 'Está entre $' + o2 + '=f(' + v + ')=' + f.tex + '$ y $' + o2 + '=g(' + v + ')=' + g.tex + '$, con $' + A_ + '\\le ' + v + '\\le ' + B_ + '$. Gira alrededor ' + (k === 0 ? 'del eje' + axName.slice(6) : 'de ' + axName) + '.']);
+    T.push(['Elección del método', 'Los rectángulos son ' + (v === 'x' ? 'verticales' : 'horizontales') + ' (grosor $d' + v + '$) y el eje es ' + (axH ? 'horizontal' : 'vertical') + '; por lo tanto, el rectángulo es <b>' + (perp ? 'perpendicular' : 'paralelo') + '</b> al eje: se usan <b>' + m.toLowerCase() + '</b>.' + (perp && cross ? ' El eje atraviesa la región: en cada sección se toma el radio mayor y el sólido queda macizo.' : '') + (!perp && k > a && k < b ? ' <b>Atención:</b> el eje pasa por dentro del intervalo; por lo tanto, las capas de ambos lados se superponen y el volumen se cuenta dos veces.' : '')]);
+    let integrandStr, factorTex, factor, setupTex;
+    if (perp) {
+      const uf = f.fn(mid) - k, ug = g.fn(mid) - k, fOut = Math.abs(uf) >= Math.abs(ug);
+      const out = fOut ? f : g, inn = fOut ? g : f, so = Math.sign(fOut ? uf : ug) || 1, si = Math.sign(fOut ? ug : uf) || 1;
+      const Rt = distTex(out.tex, k, so), rt = disc ? '0' : distTex(inn.tex, k, si);
+      T.push(['Radios', 'Distancias del eje a cada curva (en el punto medio $' + v + '=' + nf(mid) + '$ la curva ' + (fOut ? '$f$' : '$g$') + ' es la más lejana): $$R(' + v + ')=' + Rt + ',\\qquad r(' + v + ')=' + rt + '$$']);
+      setupTex = '$$V=\\pi\\int_{' + A_ + '}^{' + B_ + '}\\Big(\\left[' + Rt + '\\right]^2' + (disc ? '' : '-\\left[' + rt + '\\right]^2') + '\\Big)' + dv + '$$';
+      integrandStr = '(' + distStr(out.str, k, so) + ')^2' + (disc ? '' : '-(' + distStr(inn.str, k, si) + ')^2'); factorTex = '\\pi'; factor = PI_;
+    } else {
+      const sr = mid >= k ? 1 : -1, rho = sr > 0 ? (k === 0 ? v : v + (k > 0 ? '-' + ratTex(k) : '+' + ratTex(-k))) : ratTex(k) + '-' + v;
+      const fTop = f.fn(mid) >= g.fn(mid), top = fTop ? f : g, bot = fTop ? g : f;
+      const ht = bot.str === '0' ? top.tex : top.tex + '-\\left(' + bot.tex + '\\right)';
+      T.push(['Radio y altura', 'Radio de la capa (distancia del rectángulo al eje) y altura (' + (v === 'x' ? 'arriba − abajo' : 'derecha − izquierda') + '): $$\\rho(' + v + ')=' + rho + ',\\qquad h(' + v + ')=' + ht + '$$']);
+      setupTex = '$$V=2\\pi\\int_{' + A_ + '}^{' + B_ + '}\\left(' + rho + '\\right)\\left(' + ht + '\\right)' + dv + '$$';
+      integrandStr = (sr > 0 ? '(' + v + '-(' + k + '))' : '((' + k + ')-' + v + ')') + '*((' + top.str + ')-(' + bot.str + '))'; factorTex = '2\\pi'; factor = 2 * PI_;
+    }
+    T.push(['Planteamiento', setupTex]);
+    const c = polyOf(integrandStr, v);
+    if (c && !cross) {
+      const Fc = antider(c), Fb = pEval(Fc, b), Fa = pEval(Fc, a);
+      T.push(['Integración', 'Se desarrolla el integrando y se integra término a término: $$' + factorTex + '\\int_{' + A_ + '}^{' + B_ + '}\\left(' + polyTex(c, v) + '\\right)' + dv + '=' + factorTex + '\\left[' + polyTex(Fc, v) + '\\right]_{' + A_ + '}^{' + B_ + '}$$']);
+      T.push(['Evaluación (Barrow)', '$$V=' + factorTex + '\\Big(' + ratTex(Fb) + '-' + par(Fa) + '\\Big)=' + factorTex + '\\cdot ' + ratTex(Fb - Fa) + '$$']);
+    } else {
+      T.push(['Integración', 'El integrando no es un polinomio' + (cross ? ' (o el eje corta la región)' : '') + '; por lo tanto, la integral se evalúa con un método numérico de alta precisión (cuadratura tanh-sinh, error menor que $10^{-10}$): $V\\approx ' + nf(V, 6) + '$.']);
+    }
+    const n = +$('s3-n').value;
+    T.push(['Comprobación', 'Con $n=' + n + '$ ' + m.toLowerCase() + ' la suma da $\\approx ' + nf(riem(n), 4) + '$; con $n=1000$, $\\approx ' + nf(riem(1000), 6) + '$. El valor exacto es $' + nf(V, 6) + '$.']);
+    stepsHTML($('s3-steps'), T);
+    const pt = piTex(V);
+    setRes($('s3-res'), 'Resultado: $V' + (pt ? '=' + pt + '\\approx ' + nf(V, 4) : show(V)) + '\\ u^3$');
+  }
+  o.tick = dt => {
+    if (!st.p) return;
+    if (st.play) {
+      if (st.th >= 2 * PI_) { st.hold += dt; if (st.hold > 1.6) { st.th = 0; st.hold = 0; } }
+      else st.th = Math.min(2 * PI_, st.th + dt * 60 * PI_ / 180);
+      $('s3-ang').value = Math.round(st.th * 180 / PI_);
+    }
+    const k = Math.round(st.th / (2 * PI_) * M), th = k / M * 2 * PI_;
+    st.solid.geometry.setDrawRange(0, k * st.solid.geometry.userData.perStep);
+    st.rect.geometry.setDrawRange(0, k * st.rect.geometry.userData.perStep);
+    if (st.p.ax.t === 'x') st.pivot.rotation.set(th, 0, 0); else st.pivot.rotation.set(0, th, 0);
+    $('s3-hud').innerHTML = 'θ = ' + Math.round(th * 180 / PI_) + '°<br>' + st.m + '<br>V barrido ≈ ' + (riem(+$('s3-n').value) * th / (2 * PI_)).toFixed(3) + ' u³';
+  };
+  const play = $('s3-play');
+  play.onclick = () => { st.play = !st.play; play.textContent = st.play ? '⏸ Pausa' : '▶ Animar'; if (st.play && st.th >= 2 * PI_) st.th = 0; };
+  $('s3-reset').onclick = () => { st.th = 0; st.hold = 0; st.play = true; play.textContent = '⏸ Pausa'; };
+  $('s3-ang').oninput = () => { st.play = false; play.textContent = '▶ Animar'; st.th = $('s3-ang').value * PI_ / 180; };
+  $('s3-n').oninput = () => { if (st.p) { buildRects(); steps(); } };
+  $('s3-shS').onchange = vis; $('s3-shR').onchange = vis;
+  $('s3-var').onchange = labels;
+  $('s3-go').onclick = compute;
+  ['s3-f', 's3-g', 's3-a', 's3-b', 's3-k'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') compute(); }));
+  $('s3-ex').onclick = () => { $('s3-var').value = 'x'; $('s3-f').value = 'x'; $('s3-g').value = 'x^2'; $('s3-a').value = '0'; $('s3-b').value = '1'; $('s3-ax').value = 'h'; $('s3-k').value = '0'; compute(); };
+  compute();
+}
+
+/* =============================================================
+   DERIVADA: RECTA TANGENTE Y NORMAL
+   ============================================================= */
+function tangentLab() {
+  let S = null;
+  const plot = new Plot($('dt-cv'), draw); plot.equal = true;
+  function compute(refit) {
+    $('dt-err').textContent = ''; $('dt-hv').textContent = $('dt-h').value;
+    let f, x0, d;
+    try {
+      f = parse($('dt-f').value, 'x'); x0 = num($('dt-x0').value, 'x₀');
+      try { d = nice(MJ.derivative(f.node, 'x')); } catch (e) { throw new Error('No se pudo derivar la función de forma simbólica.'); }
+    } catch (e) { $('dt-err').textContent = e.message; return; }
+    const dfn = wrapEval(d.compile(), 'x'), y0 = f.fn(x0);
+    if (!isFinite(y0)) { $('dt-err').textContent = 'f(x₀) no está definida en x₀ = ' + nf(x0) + '.'; return; }
+    let m = dfn(x0); if (!isFinite(m)) { const hh = 1e-6, mm = (f.fn(x0 + hh) - f.fn(x0 - hh)) / (2 * hh); m = Math.abs(mm) > 1e7 ? Infinity : mm; }
+    S = { f, d, dfn, x0, y0, m };
+    if (Math.abs(x0) <= 10) $('dt-sl').value = x0;
+    if (refit) { const span = 6; plot.fit(x0 - span, x0 + span, y0 - span * 0.6, y0 + span * 0.6); } else plot.render();
+    steps();
+  }
+  function draw(pl) {
+    if (!S) return;
+    const { f, dfn, x0, y0, m } = S, items = [['y = f(x)', COL.f]];
+    if ($('dt-der').checked) { pl.curve(dfn, COL.der, 1.8, [6, 4]); items.push(["y = f′(x)", COL.der, [6, 4]]); }
+    pl.curve(f.fn, COL.f, 2.6);
+    const fin = isFinite(m);
+    if ($('dt-tan').checked) { if (fin) pl.lineMB(m, y0 - m * x0, COL.tan, 2); else pl.vline(x0, COL.tan, 2); items.push(['tangente', COL.tan]); }
+    if ($('dt-nor').checked) { if (fin && Math.abs(m) > 1e-12) pl.lineMB(-1 / m, y0 + x0 / m, COL.nor, 2); else if (fin) pl.vline(x0, COL.nor, 2); else pl.hline(y0, COL.nor, 2); items.push(['normal', COL.nor]); }
+    if ($('dt-tan').checked && $('dt-nor').checked && fin) {
+      const s = (pl.v.x1 - pl.v.x0) * 0.025, n1 = Math.hypot(1, m), u = [1 / n1, m / n1], w = [-m / n1, 1 / n1];
+      pl.path(t => t === 0 ? [x0 + u[0] * s, y0 + u[1] * s] : t === 1 ? [x0 + (u[0] + w[0]) * s, y0 + (u[1] + w[1]) * s] : [x0 + w[0] * s, y0 + w[1] * s], 0, 2, 2, cssv('--ink'), 1.2);
+    }
+    if ($('dt-sec').checked) {
+      const h = +$('dt-h').value, x1 = x0 + h, y1 = f.fn(x1);
+      if (isFinite(y1)) { const ms = (y1 - y0) / h; pl.lineMB(ms, y0 - ms * x0, COL.sec, 1.6, [7, 5]); pl.dot(x1, y1, COL.sec, 4); pl.text(x1, y1, 'Q', COL.sec); items.push(['secante PQ', COL.sec, [7, 5]]); }
+    }
+    pl.dot(x0, y0, '#e5484d', 6); pl.text(x0, y0, 'P', cssv('--ink'));
+    pl.legend(items);
+  }
+  function lineTex(m, b) {
+    if (!isFinite(m)) return null;
+    let s = 'y=';
+    if (Math.abs(m) > 1e-12) s += (m < 0 ? '-' : '') + (Math.abs(Math.abs(m) - 1) < 1e-12 ? '' : ratTex(Math.abs(m))) + 'x';
+    if (Math.abs(b) > 1e-12 || Math.abs(m) <= 1e-12) s += (Math.abs(m) > 1e-12 ? (b < 0 ? '-' : '+') : (b < 0 ? '-' : '')) + ratTex(Math.abs(b));
+    return s;
+  }
+  function steps() {
+    const { f, d, x0, y0, m } = S, X = ratTex(x0), Y = ratTex(y0), T = [];
+    T.push(['Punto de tangencia', 'Se evalúa la función en $x_0=' + X + '$: $$y_0=f(' + X + ')=' + Y + '$$ El punto es $P\\left(' + X + ',\\,' + Y + '\\right)$.']);
+    T.push(['Derivada', 'Se aplican las reglas de derivación a $f(x)=' + f.tex + '$: $$f\'(x)=' + dTex(d) + '$$']);
+    let tanEq, norEq;
+    if (isFinite(m)) {
+      T.push(['Pendiente de la tangente', 'La derivada evaluada en $x_0$ es la pendiente: $$m=f\'(' + X + ')=' + ratTex(m) + '$$']);
+      const b = y0 - m * x0; tanEq = lineTex(m, b);
+      T.push(['Recta tangente', 'Con la forma punto-pendiente $y-y_0=m(x-x_0)$: $$y-' + par(y0) + '=' + ratTex(m) + '\\left(x-' + par(x0) + '\\right)\\;\\Rightarrow\\;' + tanEq + '$$']);
+      if (Math.abs(m) < 1e-12) { norEq = 'x=' + X; T.push(['Recta normal', 'Como $m=0$, la tangente es horizontal y la normal es la recta vertical $' + norEq + '$.']); }
+      else {
+        const mn = -1 / m; norEq = lineTex(mn, y0 - mn * x0);
+        T.push(['Recta normal', 'La normal es perpendicular a la tangente; por lo tanto, su pendiente es el recíproco opuesto: $m_n=-\\dfrac{1}{m}=-\\dfrac{1}{' + ratTex(m) + '}=' + ratTex(mn) + '$ (se verifica $m\\cdot m_n=-1$). $$y-' + par(y0) + '=' + ratTex(mn) + '\\left(x-' + par(x0) + '\\right)\\;\\Rightarrow\\;' + norEq + '$$']);
+      }
+    } else {
+      tanEq = 'x=' + X; norEq = 'y=' + Y;
+      T.push(['Pendiente', 'La derivada no es finita en $x_0$: la tangente es <b>vertical</b>, $' + tanEq + '$, y la normal es horizontal, $' + norEq + '$.']);
+    }
+    if ($('dt-sec').checked && isFinite(m)) {
+      const h = +$('dt-h').value, y1 = f.fn(x0 + h);
+      if (isFinite(y1)) T.push(['Por definición (secante)', 'Con $h=' + nf(h) + '$, la pendiente de la secante $PQ$ es $$m_{\\text{sec}}=\\frac{f(x_0+h)-f(x_0)}{h}=\\frac{' + nf(y1) + '-' + par(+nf(y0)) + '}{' + nf(h) + '}\\approx ' + nf((y1 - y0) / h) + '$$ Al hacer $h\\to0$ la secante se acerca a la tangente y $m_{\\text{sec}}\\to f\'(x_0)=' + nf(m) + '$. El control de $h$ permite observar esta convergencia.']);
+    }
+    stepsHTML($('dt-steps'), T);
+    setRes($('dt-res'), 'Tangente: $' + tanEq + '$ &nbsp;·&nbsp; Normal: $' + norEq + '$');
+  }
+  plot.onPick = x => { $('dt-x0').value = nf(x, 3); compute(false); };
+  $('dt-sl').oninput = () => { $('dt-x0').value = $('dt-sl').value; compute(false); };
+  $('dt-h').oninput = () => { $('dt-hv').textContent = $('dt-h').value; if (S) { plot.render(); steps(); } };
+  ['dt-tan', 'dt-nor', 'dt-der', 'dt-sec'].forEach(id => $(id).onchange = () => { if (S) { plot.render(); steps(); } });
+  $('dt-go').onclick = () => compute(true);
+  $('dt-fit').onclick = () => compute(true);
+  ['dt-f', 'dt-x0'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') compute(true); }));
+  $('dt-ex').onclick = () => { $('dt-f').value = 'x^3-3x+1'; $('dt-x0').value = '2'; compute(true); };
+  compute(true);
+  return plot;
+}
+
+/* =============================================================
+   OPTIMIZACIÓN DE VOLÚMENES
+   ============================================================= */
+const MODELS = [
+  { key: 'caja', name: 'Caja sin tapa a partir de una lámina', params: [{ id: 'L', label: 'Largo de la lámina L', def: '30' }, { id: 'W', label: 'Ancho de la lámina W', def: '20' }],
+    make(q) {
+      const L = q.L, W = q.W; if (!(L > 0 && W > 0)) throw new Error('L y W deben ser positivos.');
+      const m = Math.min(L, W) / 2, Lt = nf(L), Wt = nf(W);
+      return { expr: 'x*(' + L + '-2x)*(' + W + '-2x)', dom: [0, m], sheet: { L, W },
+        dims: x => ({ type: 'box', l: L - 2 * x, w: W - 2 * x, h: x, open: true }),
+        rows: x => [['Corte $x$', x], ['Largo $' + Lt + '-2x$', L - 2 * x], ['Ancho $' + Wt + '-2x$', W - 2 * x], ['Altura $x$', x]],
+        plan: [['Variables', 'Se cortan cuadrados de lado $x$ en las cuatro esquinas de una lámina de $' + Lt + '\\times' + Wt + '$ y se doblan las pestañas hacia arriba. La caja queda con altura $x$, largo $' + Lt + '-2x$ y ancho $' + Wt + '-2x$.'],
+          ['Función objetivo', '$$V(x)=(\\text{largo})(\\text{ancho})(\\text{alto})=x(' + Lt + '-2x)(' + Wt + '-2x)$$'],
+          ['Dominio', 'Todas las medidas deben ser positivas: $x>0$ y $' + nf(Math.min(L, W)) + '-2x>0$; por lo tanto, $0<x<' + nf(m) + '$.']],
+        closed: 'Al desarrollar, $V(x)=4x^3-' + nf(2 * (L + W)) + 'x^2+' + nf(L * W) + 'x$ y $V\'(x)=12x^2-' + nf(4 * (L + W)) + 'x+' + nf(L * W) + '$. Con la fórmula cuadrática: $$x=\\frac{' + nf(L + W) + '\\pm\\sqrt{' + nf(L * L - L * W + W * W) + '}}{6}$$ La raíz con $+$ queda fuera del dominio; por lo tanto, se toma la raíz con $-$.' };
+    } },
+  { key: 'base', name: 'Caja de base cuadrada con material fijo', params: [{ id: 'S', label: 'Área de material S', def: '150' }, { id: 'tapa', label: 'Con tapa', def: true, type: 'check' }],
+    make(q) {
+      const S = q.S, t = q.tapa, k = t ? 2 : 1; if (!(S > 0)) throw new Error('S debe ser positivo.');
+      const m = Math.sqrt(S / k), St = nf(S), kt = t ? '2' : '';
+      return { expr: 'x*(' + S + '-' + k + '*x^2)/4', dom: [0, m],
+        dims: x => ({ type: 'box', l: x, w: x, h: (S - k * x * x) / (4 * x), open: !t }),
+        rows: x => [['Lado de la base $x$', x], ['Altura $h$', (S - k * x * x) / (4 * x)]],
+        plan: [['Variables', 'Caja de base cuadrada de lado $x$ y altura $h$, ' + (t ? 'con' : 'sin') + ' tapa, construida con $' + St + '$ unidades cuadradas de material.'],
+          ['Restricción', 'Material: ' + (t ? 'dos bases' : 'una base') + ' y cuatro caras laterales: $$' + kt + 'x^2+4xh=' + St + '\\;\\Rightarrow\\;h=\\frac{' + St + '-' + kt + 'x^2}{4x}$$'],
+          ['Función objetivo', '$$V=x^2h=x^2\\cdot\\frac{' + St + '-' + kt + 'x^2}{4x}=\\frac{x\\left(' + St + '-' + kt + 'x^2\\right)}{4}$$'],
+          ['Dominio', '$h>0$ exige $' + kt + 'x^2<' + St + '$; por lo tanto, $0<x<' + nf(m) + '$.']],
+        closed: '$V\'(x)=\\dfrac{' + St + '-' + (3 * k) + 'x^2}{4}=0\\Rightarrow x=\\sqrt{\\dfrac{' + St + '}{' + (3 * k) + '}}$.' + (t ? ' En el óptimo $h=x$: la caja es un <b>cubo</b>.' : ' En el óptimo $h=\\tfrac{x}{2}$.') };
+    } },
+  { key: 'lata', name: 'Lata cilíndrica con material fijo', params: [{ id: 'S', label: 'Área total de material S', def: '300' }],
+    make(q) {
+      const S = q.S; if (!(S > 0)) throw new Error('S debe ser positivo.');
+      const m = Math.sqrt(S / (2 * PI_)), St = nf(S), hh = x => (S - 2 * PI_ * x * x) / (2 * PI_ * x);
+      return { expr: 'x*(' + S + '-2*pi*x^2)/2', dom: [0, m],
+        dims: x => ({ type: 'cyl', r: x, h: hh(x) }),
+        rows: x => [['Radio $r=x$', x], ['Altura $h$', hh(x)]],
+        plan: [['Variables', 'Lata (cilindro cerrado) de radio $x$ y altura $h$.'],
+          ['Restricción', 'Dos tapas más la cara lateral: $$2\\pi x^2+2\\pi xh=' + St + '\\;\\Rightarrow\\;h=\\frac{' + St + '-2\\pi x^2}{2\\pi x}$$'],
+          ['Función objetivo', '$$V=\\pi x^2h=\\frac{x\\left(' + St + '-2\\pi x^2\\right)}{2}$$'],
+          ['Dominio', '$h>0$ exige $0<x<\\sqrt{\\dfrac{' + St + '}{2\\pi}}\\approx' + nf(m) + '$.']],
+        closed: '$V\'(x)=\\dfrac{' + St + '-6\\pi x^2}{2}=0\\Rightarrow x=\\sqrt{\\dfrac{' + St + '}{6\\pi}}$. En el óptimo $h=2x$: la altura es igual al diámetro.' };
+    } },
+  { key: 'cilesf', name: 'Cilindro inscrito en una esfera', params: [{ id: 'R', label: 'Radio de la esfera R', def: '10' }],
+    make(q) {
+      const Rr = q.R; if (!(Rr > 0)) throw new Error('R debe ser positivo.');
+      const hh = x => 2 * Math.sqrt(Math.max(0, Rr * Rr - x * x));
+      return { expr: '2*pi*x^2*sqrt(' + Rr + '^2-x^2)', dom: [0, Rr],
+        dims: x => ({ type: 'cylS', r: x, h: hh(x), R: Rr }),
+        rows: x => [['Radio $r=x$', x], ['Altura $h$', hh(x)]],
+        plan: [['Variables', 'Cilindro de radio $x$ y altura $h$ dentro de una esfera de radio $R=' + nf(Rr) + '$.'],
+          ['Restricción', 'Por Pitágoras, con el centro de la esfera y el borde de una tapa: $$x^2+\\left(\\frac h2\\right)^2=R^2\\;\\Rightarrow\\;h=2\\sqrt{' + nf(Rr * Rr) + '-x^2}$$'],
+          ['Función objetivo', '$$V=\\pi x^2h=2\\pi x^2\\sqrt{' + nf(Rr * Rr) + '-x^2}$$'],
+          ['Dominio', '$0<x<' + nf(Rr) + '$.']],
+        d1t: '\\frac{2\\pi x\\left(' + nf(2 * Rr * Rr) + '-3x^{2}\\right)}{\\sqrt{' + nf(Rr * Rr) + '-x^{2}}}',
+        d2t: '\\frac{2\\pi\\left(' + nf(2 * Rr ** 4) + '-' + nf(9 * Rr * Rr) + 'x^{2}+6x^{4}\\right)}{\\left(' + nf(Rr * Rr) + '-x^{2}\\right)^{3/2}}',
+        closed: 'Al igualar a cero y multiplicar por $\\sqrt{R^2-x^2}$: $2x(R^2-x^2)-x^3=0\\Rightarrow x^2=\\tfrac23R^2\\Rightarrow x=R\\sqrt{\\tfrac23}$, con $h=\\dfrac{2R}{\\sqrt3}$.' };
+    } },
+  { key: 'conoesf', name: 'Cono inscrito en una esfera', params: [{ id: 'R', label: 'Radio de la esfera R', def: '9' }],
+    make(q) {
+      const Rr = q.R; if (!(Rr > 0)) throw new Error('R debe ser positivo.');
+      const rr = x => Math.sqrt(Math.max(0, x * (2 * Rr - x)));
+      return { expr: 'pi/3*x^2*(' + 2 * Rr + '-x)', dom: [0, 2 * Rr],
+        dims: x => ({ type: 'coneS', h: x, r: rr(x), R: Rr }),
+        rows: x => [['Altura $h=x$', x], ['Radio de la base $r$', rr(x)]],
+        plan: [['Variables', 'Cono de altura $x$ y radio de la base $r$, con el vértice en el polo de una esfera de radio $R=' + nf(Rr) + '$.'],
+          ['Restricción', 'El centro de la esfera está a distancia $x-R$ de la base. Por Pitágoras: $$r^2+(x-R)^2=R^2\\;\\Rightarrow\\;r^2=x(2R-x)=x(' + nf(2 * Rr) + '-x)$$'],
+          ['Función objetivo', '$$V=\\frac13\\pi r^2x=\\frac{\\pi}{3}x^2\\left(' + nf(2 * Rr) + '-x\\right)$$'],
+          ['Dominio', '$0<x<' + nf(2 * Rr) + '$.']],
+        closed: '$V\'(x)=\\dfrac{\\pi}{3}\\left(' + nf(4 * Rr) + 'x-3x^2\\right)=0\\Rightarrow x=\\dfrac{4R}{3}=' + nf(4 * Rr / 3) + '$ (la raíz $x=0$ no está en el dominio).' };
+    } },
+  { key: 'custom', name: 'Caja personalizada: largo, ancho y alto en función de x', params: [{ id: 'l', label: 'Largo l(x) =', def: '24-2x', type: 'expr' }, { id: 'w', label: 'Ancho w(x) =', def: '24-2x', type: 'expr' }, { id: 'h', label: 'Alto h(x) =', def: 'x', type: 'expr' }, { id: 'a', label: 'Dominio: desde x =', def: '0' }, { id: 'b', label: 'hasta x =', def: '12' }],
+    make(q) {
+      const l = parse(q.l, 'x'), w = parse(q.w, 'x'), h = parse(q.h, 'x'); if (!(q.b > q.a)) throw new Error('El dominio debe cumplir a < b.');
+      return { expr: '(' + l.str + ')*(' + w.str + ')*(' + h.str + ')', dom: [q.a, q.b],
+        dims: x => ({ type: 'box', l: Math.abs(l.fn(x)), w: Math.abs(w.fn(x)), h: Math.abs(h.fn(x)) }),
+        rows: x => [['$x$', x], ['Largo $l(x)$', l.fn(x)], ['Ancho $w(x)$', w.fn(x)], ['Alto $h(x)$', h.fn(x)]],
+        plan: [['Variables', 'Las medidas de la caja dependen de $x$: $l(x)=' + l.tex + '$, $w(x)=' + w.tex + '$, $h(x)=' + h.tex + '$.'],
+          ['Función objetivo', '$$V(x)=l(x)\\,w(x)\\,h(x)=\\left(' + l.tex + '\\right)\\left(' + w.tex + '\\right)\\left(' + h.tex + '\\right)$$'],
+          ['Dominio', 'Se busca el máximo en $[' + nf(q.a) + ',\\,' + nf(q.b) + ']$. Para que la caja exista, las tres medidas deben ser positivas en ese intervalo.']] };
+    } },
+  { key: 'free', name: 'Función de volumen libre V(x)', params: [{ id: 'V', label: 'V(x) =', def: 'x*(24-2x)^2', type: 'expr' }, { id: 'a', label: 'Dominio: desde x =', def: '0' }, { id: 'b', label: 'hasta x =', def: '12' }],
+    make(q) {
+      const V = parse(q.V, 'x'); if (!(q.b > q.a)) throw new Error('El dominio debe cumplir a < b.');
+      return { expr: V.str, dom: [q.a, q.b],
+        dims: x => ({ type: 'cube', V: V.fn(x) }),
+        rows: x => [['$x$', x], ['Arista del cubo de igual volumen', Math.cbrt(Math.max(0, V.fn(x)))]],
+        plan: [['Función objetivo', '$$V(x)=' + V.tex + '$$ en el intervalo $[' + nf(q.a) + ',\\,' + nf(q.b) + ']$.'],
+          ['Visualización', 'Como no se conoce la forma del sólido, el visor 3D dibuja un <b>cubo con el mismo volumen</b> $V(x)$ para comparar el antes y el después.']] };
+    } }
+];
+
+function optLab() {
+  const o = scene3($('op-view'));
+  const OP = { M: null, mdl: null, V: null, d1: null, d2: null, xs: NaN, xb: NaN, x: NaN, t: 1, anim: null, group: null, state: 'Antes', ext: 10 };
+  const plotV = new Plot($('op-cv'), drawV), plotD = new Plot($('op-cvd'), drawD);
+  const sel = $('op-model');
+  MODELS.forEach((m, i) => { const op = document.createElement('option'); op.value = i; op.textContent = m.name; sel.appendChild(op); });
+  const matCard = new THREE.MeshPhongMaterial({ color: 0xd9a86c, side: THREE.DoubleSide, shininess: 20 });
+  const matBase = new THREE.MeshPhongMaterial({ color: 0xc48a4e, side: THREE.DoubleSide, shininess: 20 });
+  const matCut = new THREE.MeshBasicMaterial({ color: 0xe5484d, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false });
+  const matSolid = new THREE.MeshPhongMaterial({ color: 0x4f8cff, transparent: true, opacity: 0.75, side: THREE.DoubleSide, shininess: 60 });
+  const matWire = new THREE.MeshBasicMaterial({ color: 0x8a8f98, wireframe: true, transparent: true, opacity: 0.3 });
+  const matHide = new THREE.MeshBasicMaterial({ visible: false });
+  function edges(mesh, color = 0x5a3d1c) { const lm = new THREE.LineBasicMaterial({ color }); lm.userData.own = true; mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), lm)); return mesh; }
+  function plane(w, d, mat) { const g = new THREE.PlaneGeometry(Math.max(w, 1e-4), Math.max(d, 1e-4)); g.rotateX(-PI_ / 2); return edges(new THREE.Mesh(g, mat)); }
+  function paramsUI() {
+    const m = MODELS[+sel.value], box = $('op-params'); box.innerHTML = '';
+    m.params.forEach(p => {
+      const lab = document.createElement('label');
+      if (p.type === 'check') { lab.className = 'chk'; lab.innerHTML = '<input type="checkbox" id="op-p-' + p.id + '"' + (p.def ? ' checked' : '') + '> ' + p.label; }
+      else { lab.textContent = p.label; const inp = document.createElement('input'); inp.type = 'text'; inp.id = 'op-p-' + p.id; inp.value = p.def; inp.spellcheck = false; inp.addEventListener('keydown', e => { if (e.key === 'Enter') compute(true); }); lab.appendChild(inp); }
+      box.appendChild(lab);
+    });
+    $('op-foldw').style.display = m.key === 'caja' ? '' : 'none';
+  }
+  function compute(resetX) {
+    $('op-err').textContent = '';
+    const mdl = MODELS[+sel.value], q = {};
+    let M_, V, d1, d2;
+    try {
+      mdl.params.forEach(p => { const el = $('op-p-' + p.id); q[p.id] = p.type === 'check' ? el.checked : p.type === 'expr' ? el.value : num(el.value, p.label); });
+      M_ = mdl.make(q); V = parse(M_.expr, 'x');
+      d1 = nice(MJ.derivative(V.node, 'x')); d2 = nice(MJ.derivative(d1, 'x'));
+    } catch (e) { $('op-err').textContent = e.message; return; }
+    const [lo, hi] = M_.dom, eps = (hi - lo) * 1e-6, d1f = wrapEval(d1.compile(), 'x'), d2f = wrapEval(d2.compile(), 'x');
+    const crit = roots(d1f, lo + eps, hi - eps, 4000).filter(x => isFinite(V.fn(x)));
+    const cands = crit.map(x => ({ x, V: V.fn(x), end: false }));
+    [lo + eps, hi - eps].forEach(x => { const y = V.fn(x); if (isFinite(y)) cands.push({ x, V: y, end: true }); });
+    if (!cands.length) { $('op-err').textContent = 'V(x) no está definida en el dominio.'; return; }
+    const best = cands.reduce((p, c) => c.V > p.V ? c : p);
+    Object.assign(OP, { M: M_, mdl, V, d1, d2, d1f, d2f, crit, best, xs: best.x, lo, hi });
+    const sl = $('op-x'); sl.min = lo; sl.max = hi; sl.step = (hi - lo) / 1000;
+    if (resetX || !(OP.xb > lo && OP.xb < hi)) OP.xb = lo + (hi - lo) * (mdl.key === 'caja' ? 0.15 : 0.25);
+    OP.ext = 0;
+    for (let i = 1; i < 40; i++) OP.ext = Math.max(OP.ext, extent(M_.dims(lo + (hi - lo) * i / 40)));
+    if (M_.sheet) OP.ext = Math.max(M_.sheet.L, M_.sheet.W);
+    OP.anim = null; setState(OP.xb, M_.sheet ? 0 : 1, 'Antes');
+    const look = new THREE.Vector3(0, M_.dims(OP.xs).type.endsWith('S') ? 0 : OP.ext * 0.15, 0);
+    o.look(look, OP.ext * 1.15, [0.9, 0.75, 1.2]);
+    const vmax = best.V, vals = []; for (let i = 0; i <= 200; i++) vals.push(V.fn(lo + (hi - lo) * i / 200));
+    const [vl] = robustRange(vals);
+    plotV.fit(lo, hi, Math.min(0, vl), vmax * 1.12);
+    const dv = []; for (let i = 0; i <= 200; i++) dv.push(d1f(lo + (hi - lo) * (i + .5) / 201));
+    const [dl, dh] = robustRange(dv); plotD.fit(lo, hi, Math.min(dl, 0), Math.max(dh, 0));
+    steps(); cmp();
+  }
+  function extent(d) {
+    if (!d) return 1;
+    if (d.type === 'box') return Math.max(d.l, d.w, d.h) || 1;
+    if (d.type === 'cyl') return Math.max(2 * d.r, d.h) || 1;
+    if (d.type === 'cylS' || d.type === 'coneS') return 2 * d.R;
+    if (d.type === 'cube') return Math.cbrt(Math.max(0, d.V)) || 1;
+    return 1;
+  }
+  function setState(x, t, state) { OP.x = x; OP.t = t; OP.state = state || OP.state; $('op-x').value = x; $('op-fold').value = t; $('op-xv').textContent = nf(x, 3); rebuild(); plotV.render(); plotD.render(); }
+  function rebuild() {
+    if (OP.group) { o.sc.remove(OP.group); disposeGroup(OP.group); }
+    const G = new THREE.Group(), d = OP.M.dims(OP.x), E = OP.ext; OP.group = G; o.sc.add(G);
+    const grid = new THREE.GridHelper(E * 2.2, 22, 0x8a8f98, 0x8a8f98); grid.material.transparent = true; grid.material.opacity = 0.25; grid.material.userData.own = true;
+    grid.position.y = (d.type === 'cylS' || d.type === 'coneS') ? -d.R - 0.002 : -0.002; G.add(grid);
+    const leg = $('op-leg');
+    if (OP.M.sheet) {
+      const { L, W } = OP.M.sheet, x = Math.max(OP.x, 1e-4), t = OP.t, lb = Math.max(L - 2 * x, 1e-4), wb = Math.max(W - 2 * x, 1e-4), a = t * PI_ / 2;
+      G.add(plane(lb, wb, matBase));
+      const flap = (px, pz, w, dd, ox, oz, rx, rz) => { const pv = new THREE.Group(); pv.position.set(px, 0, pz); const m = plane(w, dd, matCard); m.position.set(ox, 0, oz); pv.add(m); pv.rotation.set(rx, 0, rz); G.add(pv); };
+      flap(0, wb / 2, lb, x, 0, x / 2, -a, 0); flap(0, -wb / 2, lb, x, 0, -x / 2, a, 0);
+      flap(lb / 2, 0, x, wb, x / 2, 0, 0, a); flap(-lb / 2, 0, x, wb, -x / 2, 0, 0, -a);
+      if (t < 0.999) { matCut.opacity = 0.6 * (1 - t); for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const c = plane(x, x, matCut); c.position.set(sx * (lb / 2 + x / 2), 0.001, sz * (wb / 2 + x / 2)); G.add(c); } }
+      leg.innerHTML = '<i style="background:#d9a86c"></i>lámina / caja<i style="background:#e5484d"></i>esquinas que se cortan';
+    } else if (d.type === 'box' || d.type === 'cube') {
+      const l = d.type === 'cube' ? Math.cbrt(Math.max(0, d.V)) : d.l, w = d.type === 'cube' ? l : d.w, h = d.type === 'cube' ? l : d.h;
+      const mats = d.open ? [matCard, matCard, matHide, matCard, matCard, matCard] : matCard;
+      const m = edges(new THREE.Mesh(new THREE.BoxGeometry(Math.max(l, 1e-4), Math.max(h, 1e-4), Math.max(w, 1e-4)), mats)); m.position.y = h / 2; G.add(m);
+      leg.innerHTML = d.type === 'cube' ? '<i style="background:#d9a86c"></i>cubo de igual volumen' : '<i style="background:#d9a86c"></i>caja' + (d.open ? ' (sin tapa)' : '');
+    } else if (d.type === 'cyl') {
+      const m = edges(new THREE.Mesh(new THREE.CylinderGeometry(Math.max(d.r, 1e-4), Math.max(d.r, 1e-4), Math.max(d.h, 1e-4), 64), matSolid), 0x2a4f9a); m.position.y = d.h / 2; G.add(m);
+      leg.innerHTML = '<i style="background:#4f8cff"></i>lata';
+    } else {
+      G.add(new THREE.Mesh(new THREE.SphereGeometry(d.R, 32, 20), matWire));
+      if (d.type === 'cylS') { const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(d.r, 1e-4), Math.max(d.r, 1e-4), Math.max(d.h, 1e-4), 64), matSolid); G.add(m); }
+      else { const m = new THREE.Mesh(new THREE.ConeGeometry(Math.max(d.r, 1e-4), Math.max(d.h, 1e-4), 64), matSolid); m.position.y = d.R - d.h / 2; G.add(m); }
+      leg.innerHTML = '<i style="background:#8a8f98"></i>esfera<i style="background:#4f8cff"></i>' + (d.type === 'cylS' ? 'cilindro' : 'cono');
+    }
+    const Vx = OP.V.fn(OP.x);
+    $('op-hud').innerHTML = '<b>' + OP.state + '</b><br>x = ' + OP.x.toFixed(3) + '<br>V = ' + (isFinite(Vx) ? Vx.toFixed(2) : '—') + ' u³';
+  }
+  function tween(x, t, state) { OP.anim = { x0: OP.x, t0: OP.t, x1: x, t1: t, s: performance.now(), dur: 1500, state }; OP.state = state; }
+  o.tick = () => {
+    if (!OP.anim) return;
+    const A = OP.anim, k = Math.min(1, (performance.now() - A.s) / A.dur), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    const tt = OP.M.sheet ? (A.t1 > A.t0 ? Math.max(0, Math.min(1, (e - 0.35) / 0.65)) * (A.t1 - A.t0) + A.t0 : A.t0 + (A.t1 - A.t0) * Math.min(1, e / 0.65)) : A.t1;
+    setState(A.x0 + (A.x1 - A.x0) * e, tt, A.state);
+    if (k >= 1) OP.anim = null;
+  };
+  function drawV(pl) {
+    if (!OP.M) return; const { lo, hi, V } = OP;
+    pl.curve(x => x >= lo && x <= hi ? V.fn(x) : NaN, COL.f, 2.6);
+    const xb = OP.x, yb = V.fn(xb), xs = OP.xs, ys = V.fn(xs), mut = cssv('--muted');
+    pl.seg(xs, 0, xs, ys, COL.ok, 1.2, [5, 4]); pl.seg(lo, ys, xs, ys, COL.ok, 1.2, [5, 4]);
+    pl.dot(xs, ys, COL.ok, 6); pl.text(xs, ys, 'máximo', COL.ok);
+    pl.seg(xb, 0, xb, yb, mut, 1, [3, 3]); pl.dot(xb, yb, COL.f, 5);
+    pl.legend([['V(x)', COL.f], ['V máx', COL.ok]]);
+  }
+  function drawD(pl) {
+    if (!OP.M) return; const { lo, hi, d1f } = OP;
+    pl.curve(x => x >= lo && x <= hi ? d1f(x) : NaN, COL.der, 2.4);
+    OP.crit.forEach(x => pl.dot(x, 0, '#e5484d', 4));
+    pl.dot(OP.xs, 0, COL.ok, 6); pl.text(OP.xs, 0, "V′ = 0", COL.ok);
+    pl.dot(OP.x, d1f(OP.x), COL.f, 5);
+    pl.legend([["V′(x)", COL.der]]);
+  }
+  function rowsHTML(x) { return '<ul class="dimlist">' + OP.M.rows(x).map(([t, v]) => '<li>' + t + ' = ' + (isFinite(v) ? nf(v, 3) : '—') + '</li>').join('') + '</ul>'; }
+  function cmp() {
+    const vb = OP.V.fn(OP.xb), vs = OP.best.V, gain = vb > 0 ? (vs / vb - 1) * 100 : NaN;
+    const el = $('op-cmp');
+    el.innerHTML = '<div><b class="t">Antes (x elegido)</b><span class="big">V ≈ ' + (isFinite(vb) ? nf(vb, 2) : '—') + '</span>' + rowsHTML(OP.xb) + '</div>' +
+      '<div class="opt"><b class="t">Después (óptimo)</b><span class="big">V máx ≈ ' + nf(vs, 2) + '</span>' + rowsHTML(OP.xs) + (isFinite(gain) && gain > 0.05 ? '<div style="margin-top:4px">El volumen aumenta un <b>' + nf(gain, 1) + ' %</b>.</div>' : '') + '</div>';
+    tx(el);
+  }
+  function steps() {
+    const { M: M_, d1, d2, d2f, crit, best, lo, hi, V } = OP, T = [...M_.plan];
+    T.push(['Derivada', 'Se deriva $V(x)$ con las reglas del producto, la potencia y la cadena: $$V\'(x)=' + (M_.d1t || dTex(d1)) + '$$']);
+    T.push(['Puntos críticos', 'Se resuelve $V\'(x)=0$ dentro del dominio. ' + (M_.closed || 'La ecuación se resuelve numéricamente (bisección).') + ' ' + (crit.length ? 'Puntos críticos en el dominio: ' + crit.map(x => '$x=' + nf(x, 4) + '$').join(', ') + '.' : 'No hay puntos críticos dentro del dominio.')]);
+    const xs = best.x, s2 = d2f(xs);
+    if (!best.end) T.push(['Criterio de la segunda derivada', '$$V\'\'(x)=' + (M_.d2t || dTex(d2)) + '$$ En $x^*=' + nf(xs, 4) + '$: $V\'\'(x^*)\\approx ' + nf(s2, 4) + (s2 < 0 ? '<0$; por lo tanto, hay un <b>máximo</b>.' : s2 > 0 ? '>0$ (mínimo relativo).' : '$; se confirma con el signo de $V\'$: pasa de positiva a negativa.')]);
+    const vl = isFinite(V.fn(lo)) ? V.fn(lo) : V.fn(lo + (hi - lo) * 1e-6), vh = isFinite(V.fn(hi)) ? V.fn(hi) : V.fn(hi - (hi - lo) * 1e-6);
+    T.push(['Comparación con los extremos', 'En los extremos del dominio: $V(' + nf(lo) + ')\\approx ' + (isFinite(vl) ? nf(vl, 3) : '\\text{—}') + '$ y $V(' + nf(hi) + ')\\approx ' + (isFinite(vh) ? nf(vh, 3) : '\\text{—}') + '$. ' + (best.end ? 'El mayor valor está en un extremo del dominio: <b>no hay máximo interior</b>.' : 'El punto crítico da el mayor volumen; por lo tanto, es el <b>máximo absoluto</b>.')]);
+    T.push(['Dimensiones óptimas', rowsHTML(xs)]);
+    T.push(['Volumen máximo', '$$V_{\\max}=V(' + nf(xs, 4) + ')\\approx ' + nf(best.V, 4) + '\\ u^3$$']);
+    stepsHTML($('op-steps'), T);
+    setRes($('op-res'), 'Óptimo: $x^*\\approx ' + nf(xs, 4) + '$ &nbsp;·&nbsp; $V_{\\max}\\approx ' + nf(best.V, 4) + '\\ u^3$');
+  }
+  sel.onchange = () => { paramsUI(); compute(true); };
+  $('op-go').onclick = () => compute(false);
+  $('op-ex').onclick = () => { sel.value = 0; paramsUI(); compute(true); };
+  $('op-x').oninput = () => { if (!OP.M) return; OP.anim = null; OP.xb = +$('op-x').value; setState(OP.xb, OP.M.sheet ? +$('op-fold').value : 1, 'Antes'); cmp(); };
+  $('op-fold').oninput = () => { if (!OP.M) return; OP.anim = null; setState(OP.x, +$('op-fold').value, OP.state); };
+  $('op-before').onclick = () => { if (OP.M) tween(OP.xb, OP.M.sheet ? 0 : 1, 'Antes'); };
+  $('op-after').onclick = () => { if (OP.M) tween(OP.xs, 1, 'Después: volumen máximo'); };
+  paramsUI(); compute(true);
+}
+
+/* =============================================================
+   NAVEGACIÓN
+   ============================================================= */
+const VIEWS = ['home', 'dif', 'int'], DEF = { dif: 'dif-tan', int: 'int-area' }, cur = { dif: null, int: null }, inited = {};
+const INIT = { 'dif-tan': tangentLab, 'dif-opt': optLab, 'int-area': () => areaLab('ab', false), 'int-entre': () => areaLab('ae', true), 'int-solido': solidLab };
+function ensure(sub) {
+  if (inited[sub] || !INIT[sub]) return; inited[sub] = true;
+  if (!HAS_MATH) { const e = document.querySelector('#' + sub + ' .err'); if (e) e.textContent = 'No se pudo cargar la librería math.js. Revisa tu conexión a internet y recarga la página.'; return; }
+  try { INIT[sub](); } catch (e) { console.error(e); const el = document.querySelector('#' + sub + ' .err'); if (el) el.textContent = 'Error al iniciar: ' + e.message; }
+}
+function refresh() {
+  requestAnimationFrame(() => {
+    if (!$('int-solidos').hidden && !$('view-int').hidden) { try { resize(); } catch (e) {} }
+    plots.forEach(p => p.render()); scenes.forEach(s => s.size());
+  });
+}
+function setSub(view, sub) {
+  const ok = $(sub) && $(sub).parentElement === $('view-' + view) ? sub : DEF[view];
+  cur[view] = ok;
+  document.querySelectorAll('#view-' + view + ' > .sub').forEach(el => { el.hidden = el.id !== ok; });
+  document.querySelectorAll('.subtabs[data-view="' + view + '"] button').forEach(b => b.classList.toggle('on', b.dataset.sub === ok));
+  ensure(ok);
+}
+function go(view, sub, scroll = true) {
+  if (!VIEWS.includes(view)) view = 'home';
+  VIEWS.forEach(k => { $('view-' + k).hidden = k !== view; });
+  document.querySelectorAll('#mainTabs button').forEach(b => b.classList.toggle('on', b.dataset.go === view));
+  if (view !== 'home') setSub(view, sub || cur[view] || DEF[view]);
+  store.set('mz-view', view === 'home' ? 'home' : cur[view]);
+  if (scroll) window.scrollTo(0, 0);
+  refresh();
+}
+function goTarget(s) { if (!s) return go('home', null, false); if (VIEWS.includes(s)) return go(s, null, false); const v = s.split('-')[0]; return go(VIEWS.includes(v) ? v : 'home', s, false); }
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g) { e.preventDefault(); go(g.dataset.go, g.dataset.sub); return; }
+  const s = e.target.closest('.subtabs button');
+  if (s) { const v = s.closest('.subtabs').dataset.view; setSub(v, s.dataset.sub); store.set('mz-view', cur[v]); refresh(); }
+});
+const onTheme = () => { plots.forEach(p => p.render()); scenes.forEach(s => s.bg()); };
+$('themeBtn2').onclick = () => {
+  const r = document.documentElement, dark = matchMedia('(prefers-color-scheme: dark)').matches, c = r.dataset.theme || (dark ? 'dark' : 'light');
+  r.dataset.theme = c === 'dark' ? 'light' : 'dark'; try { setBg(); } catch (e) {}
+};
+new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', onTheme);
+let last = performance.now();
+function loop(t) {
+  const dt = Math.min(0.05, (t - last) / 1000); last = t;
+  scenes.forEach(o => { if (!o.el.offsetParent) return; try { if (o.tick) o.tick(dt, t); } catch (e) { console.error(e); } o.ctl.update(); o.r.render(o.sc, o.cam); });
+  requestAnimationFrame(loop);
+}
+['view-home', 'view-dif', 'int-area', 'int-entre', 'int-solido'].forEach(id => tx($(id)));
+let q = null; try { q = new URLSearchParams(location.search).get('vista'); } catch (e) {}
+goTarget(q || store.get('mz-view'));
+requestAnimationFrame(loop);
+})();
+</script>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-foot">
+  <div class="in">
+    <div>
+      <div class="fbrand"><span class="logo">∫</span> Monitoría de Cálculo</div>
+      <p>Material académico de Cálculo Diferencial e Integral: fundamentos teóricos, ejercicios resueltos y simuladores interactivos en 2D y 3D.</p>
+    </div>
+    <div>
+      <h4>Autor</h4>
+      <ul>
+        <li><b>Iván Darío Marchena Salgado</b></li>
+        <li><span class="k">C.C.</span>1082861728</li>
+        <li><span class="k">Teléfono</span><a href="tel:+573006101547">300 610 1547</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Ubicación</h4>
+      <ul>
+        <li><span class="k">Barrio</span>María Eugenia</li>
+        <li><span class="k">Dirección</span>Calle 40 # 17-63</li>
+      </ul>
+    </div>
+  </div>
+  <div class="legal">
+    <span>© <span id="yr">2026</span> Iván Darío Marchena Salgado. Todos los derechos reservados.</span>
+    <span>Prohibida su reproducción total o parcial sin autorización del autor.</span>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+</body>
+</html>

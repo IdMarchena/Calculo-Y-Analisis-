@@ -1,0 +1,21 @@
+{
+  "name": "calculo-backend",
+  "version": "1.0.0",
+  "description": "Backend de la Monitoría de Cálculo: API REST y servidor del frontend.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": { "node": ">=18" },
+  "author": "Iván Darío Marchena Salgado",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "helmet": "^7.2.0"
+  }
+}
