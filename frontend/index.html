@@ -218,6 +218,44 @@ h3{font-size:15px;margin:20px 0 0;color:var(--accent);text-transform:uppercase;l
 .site-foot .fbrand{display:flex;align-items:center;gap:10px;font:700 17px "Poppins",sans-serif;color:#fff;margin-bottom:8px}
 .site-foot .fbrand .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center}
 .site-foot .k{color:#94a3c8;display:inline-block;min-width:92px}
+/* ---------- Perfil del creador ---------- */
+.pf-hero{margin-top:22px;border-radius:22px;background:var(--grad);color:#fff;padding:30px;display:grid;grid-template-columns:200px 1fr;gap:30px;align-items:center;position:relative;overflow:hidden;box-shadow:0 18px 40px -20px #4f46e5}
+.pf-hero::before{content:"</> { } ∫ λ";position:absolute;right:-6px;bottom:-22px;font:700 70px/1 "Poppins",sans-serif;opacity:.1;white-space:nowrap;pointer-events:none}
+.pf-photo{width:200px;height:200px;border-radius:50%;object-fit:cover;border:5px solid #ffffffcc;box-shadow:0 14px 34px -10px #0008;background:#ffffff33}
+.pf-hero h1{margin:0;font:800 32px/1.15 "Poppins",sans-serif}
+.pf-hero .role{margin:8px 0 0;font-weight:600;font-size:16px;color:#e0e7ff}
+.pf-hero .bio{margin:14px 0 0;line-height:1.65;color:#ffffffe6;max-width:760px;position:relative}
+.pf-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pf-chips span{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:#ffffff22;border:1px solid #ffffff44}
+.pf-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;position:relative}
+.pf-links a{display:inline-flex;align-items:center;gap:8px;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:9px 14px;border-radius:12px;transition:transform .15s}
+.pf-links a:hover{transform:translateY(-2px)}
+.pf-links svg{width:18px;height:18px;fill:currentColor}
+.pf-links .ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%)}
+.pf-links .fb{background:#1877f2}
+.pf-links .tel{background:#0b0f2455;border:1px solid #ffffff44}
+.pf-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
+.pf-info .card{margin-top:0;border-top:5px solid var(--c)}
+.pf-info .card h2{margin:0 0 6px;font-size:18px;color:var(--c)}
+.pf-info .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+.pf-info .card b{color:var(--ink)}
+.pf-sec{margin:30px 0 4px;font:800 24px "Poppins",sans-serif}
+.pf-sec small{display:block;font:500 14px "Inter",sans-serif;color:var(--muted);margin-top:4px}
+.pj-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:14px}
+.pj{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.pj:hover{transform:translateY(-4px);box-shadow:0 20px 40px -22px var(--c)}
+.pj .shot{display:block;aspect-ratio:5/3;overflow:hidden;border-bottom:4px solid var(--c);background:var(--chip)}
+.pj .shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .4s}
+.pj:hover .shot img{transform:scale(1.04)}
+.pj .body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.pj .tag{align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.pj h3{margin:0;font:800 21px "Poppins",sans-serif;color:var(--ink)}
+.pj p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+.pj ul{margin:0;padding-left:18px;color:var(--muted);font-size:13.5px;line-height:1.6}
+.pj .go{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:var(--c);color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:9px 16px;border-radius:10px;transition:filter .2s}
+.pj .go:hover{filter:brightness(1.1)}
+.pj .url{font-size:12.5px;color:var(--muted);word-break:break-all}
+@media (max-width:760px){.pj-grid{grid-template-columns:1fr}.pf-hero{grid-template-columns:1fr;text-align:center;padding:26px 18px}.pf-photo{margin:0 auto;width:160px;height:160px}.pf-chips,.pf-links{justify-content:center}.pf-hero h1{font-size:26px}}
 .site-foot .social{display:flex;gap:12px;margin-top:14px}
 .site-foot .social a{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;transition:transform .15s}
 .site-foot .social a:hover{transform:translateY(-2px);text-decoration:none}
@@ -241,6 +279,7 @@ h3{font-size:15px;margin:20px 0 0;color:var(--accent);text-transform:uppercase;l
   <div class="brand"><span class="logo">∫</span> Monitoría de Cálculo</div>
   <div class="tabs" id="mainTabs">
     <button data-go="home">Inicio</button>
+    <button data-go="perfil">Perfil del creador</button>
     <button data-go="dif">Cálculo Diferencial</button>
     <button data-go="int">Cálculo Integral</button>
   </div>
@@ -289,6 +328,80 @@ h3{font-size:15px;margin:20px 0 0;color:var(--accent);text-transform:uppercase;l
       </table></div>
       <p class="hint">Los límites y parámetros admiten expresiones, como <code>pi/2</code> o <code>sqrt(3)</code>. En los graficadores 2D, la vista se desplaza arrastrando y la escala se ajusta con la rueda del ratón.</p>
     </section>
+  </div>
+</div>
+
+<!-- ===================== PERFIL DEL CREADOR ===================== -->
+<div class="view" id="view-perfil" hidden>
+  <div class="mz">
+    <section class="pf-hero">
+      <img class="pf-photo" src="img/ivan.jpg" alt="Fotografía de Iván Darío Marchena Salgado" width="200" height="200" loading="lazy" decoding="async">
+      <div>
+        <h1>Iván Darío Marchena Salgado</h1>
+        <p class="role">Estudiante de Ingeniería de Sistemas · Universidad del Magdalena</p>
+        <p class="bio">Desarrollador de software orientado a soluciones web con impacto local en Santa Marta: movilidad urbana, vivienda, educación y salud. Creador de esta plataforma de Monitoría de Cálculo, que integra simuladores 2D y 3D con procedimientos analíticos para apoyar el aprendizaje del Cálculo Diferencial e Integral.</p>
+        <div class="pf-chips"><span>Desarrollo web full-stack</span><span>Visualización 3D</span><span>Mapas en tiempo real</span><span>Plataformas educativas</span><span>Sistemas de gestión</span></div>
+        <div class="pf-links">
+          <a class="ig" href="https://www.instagram.com/ivann_ots/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1.1.4 2.2.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1.1.4-2.2.4-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1.1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1.1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.3.8-.4.4-.6.8-.8 1.3-.1.4-.3 1-.4 2.1C2.6 9.9 2.6 10.3 2.6 12s0 2.1.1 3.3c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.3.4.4.8.6 1.3.8.4.1 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.3-.8.4-.4.6-.8.8-1.3.1-.4.3-1 .4-2.1.1-1.2.1-1.6.1-3.3s0-2.1-.1-3.3c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.3-.4-.4-.8-.6-1.3-.8-.4-.1-1-.3-2.1-.4C15.5 4 15.1 4 12 4zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 8.1a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zm6.2-8.3a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0z"/></svg> Instagram</a>
+          <a class="fb" href="https://www.facebook.com/ivandario.marchabasalgado" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21.9v-8.1h2.7l.4-3.2h-3.1V8.6c0-.9.3-1.5 1.6-1.5h1.7V4.2c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.3H7.4v3.2h2.8v8.1h3.3z"/></svg> Facebook</a>
+          <a class="tel" href="tel:+573006101547">☎ 300 610 1547</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="pf-info">
+      <section class="card" style="--c:var(--c-dif)"><h2>🎓 Formación</h2><p><b>Ingeniería de Sistemas</b><br>Universidad del Magdalena, Santa Marta.</p></section>
+      <section class="card" style="--c:var(--c-int)"><h2>∫ Monitoría académica</h2><p><b>Cálculo Diferencial e Integral</b><br>Autor de los simuladores, la teoría y los ejercicios resueltos de esta plataforma.</p></section>
+      <section class="card" style="--c:#7c3aed"><h2>🚀 Proyectos en producción</h2><p><b>4 plataformas web desplegadas</b><br>En los sectores inmobiliario, de transporte, educativo y de salud.</p></section>
+    </div>
+
+    <h2 class="pf-sec">Proyectos<small>Aplicaciones diseñadas y desarrolladas por el autor</small></h2>
+    <div class="pj-grid">
+      <article class="pj" style="--c:#c2410c">
+        <a class="shot" href="https://rentasmartt.com/" target="_blank" rel="noopener noreferrer"><img src="img/rentasmartt.jpg" alt="Página de inicio de RentaSmart" loading="lazy" decoding="async" width="800" height="480"></a>
+        <div class="body">
+          <span class="tag">PropTech · Arrendamientos</span>
+          <h3>RentaSmart</h3>
+          <p>Plataforma web de arrendamiento inmobiliario que conecta a propietarios con arrendatarios y centraliza la gestión del inmueble en un solo sistema.</p>
+          <ul><li>Publicación y búsqueda de inmuebles por ciudad, tipo y presupuesto</li><li>Contratos digitales y gestión de pagos</li><li>Servicios de mantenimiento y calificación de publicaciones</li></ul>
+          <span class="url">rentasmartt.com</span>
+          <a class="go" href="https://rentasmartt.com/" target="_blank" rel="noopener noreferrer">Visitar el sitio ↗</a>
+        </div>
+      </article>
+      <article class="pj" style="--c:#1d4ed8">
+        <a class="shot" href="https://tubuseta.com/" target="_blank" rel="noopener noreferrer"><img src="img/tubuseta.jpg" alt="Página de inicio de TuBuseta" loading="lazy" decoding="async" width="800" height="480"></a>
+        <div class="body">
+          <span class="tag">Movilidad · Tiempo real</span>
+          <h3>TuBuseta</h3>
+          <p>Sistema de seguimiento en tiempo real de las busetas del transporte público de Santa Marta (SETP), accesible desde el navegador sin instalación.</p>
+          <ul><li>Ubicación en vivo de cada buseta sobre el mapa</li><li>Rutas trazadas sobre las vías reales de la ciudad</li><li>Tiempo estimado de llegada a cada parada</li></ul>
+          <span class="url">tubuseta.com</span>
+          <a class="go" href="https://tubuseta.com/" target="_blank" rel="noopener noreferrer">Visitar el sitio ↗</a>
+        </div>
+      </article>
+      <article class="pj" style="--c:#b45309">
+        <a class="shot" href="https://puntodelsaberr.com/" target="_blank" rel="noopener noreferrer"><img src="img/puntodelsaber.jpg" alt="Página de inicio de Punto del Saber" loading="lazy" decoding="async" width="800" height="480"></a>
+        <div class="body">
+          <span class="tag">EdTech · Pruebas Saber</span>
+          <h3>Punto del Saber</h3>
+          <p>Plataforma de preparación para las pruebas Saber 9°, 10° y 11° y Saber Pro, orientada a la comprensión y no a la memorización de respuestas.</p>
+          <ul><li>Práctica por competencias con retroalimentación explicada</li><li>Diagnóstico del desempeño y simulacros</li><li>Planes para estudiantes e instituciones educativas</li></ul>
+          <span class="url">puntodelsaberr.com</span>
+          <a class="go" href="https://puntodelsaberr.com/" target="_blank" rel="noopener noreferrer">Visitar el sitio ↗</a>
+        </div>
+      </article>
+      <article class="pj" style="--c:#7c3aed">
+        <a class="shot" href="https://nexodent.onrender.com/" target="_blank" rel="noopener noreferrer"><img src="img/nexodent.jpg" alt="Pantalla de ingreso de NEXODENT" loading="lazy" decoding="async" width="800" height="480"></a>
+        <div class="body">
+          <span class="tag">Salud · Gestión académica</span>
+          <h3>NEXODENT</h3>
+          <p>Red académica para la gestión de clínicas odontológicas universitarias, con flujos diferenciados por rol y tratamiento de datos conforme a la Ley 1581 de 2012.</p>
+          <ul><li>Citas de ingreso, pacientes, agenda y rotaciones</li><li>Valoraciones y aprobaciones docentes</li><li>Roles: estudiante, docente, doctor(a), coordinación y archivo</li></ul>
+          <span class="url">nexodent.onrender.com</span>
+          <a class="go" href="https://nexodent.onrender.com/" target="_blank" rel="noopener noreferrer">Visitar el sitio ↗</a>
+        </div>
+      </article>
+    </div>
   </div>
 </div>
 
@@ -2047,7 +2160,7 @@ function optLab() {
 /* =============================================================
    NAVEGACIÓN
    ============================================================= */
-const VIEWS = ['home', 'dif', 'int'], DEF = { dif: 'dif-tan', int: 'int-area' }, cur = { dif: null, int: null }, inited = {};
+const VIEWS = ['home', 'perfil', 'dif', 'int'], DEF = { dif: 'dif-tan', int: 'int-area' }, cur = { dif: null, int: null }, inited = {};
 const INIT = { 'dif-tan': tangentLab, 'dif-opt': optLab, 'int-area': () => areaLab('ab', false), 'int-entre': () => areaLab('ae', true), 'int-solido': solidLab };
 function ensure(sub) {
   if (inited[sub] || !INIT[sub]) return; inited[sub] = true;
@@ -2071,8 +2184,8 @@ function go(view, sub, scroll = true) {
   if (!VIEWS.includes(view)) view = 'home';
   VIEWS.forEach(k => { $('view-' + k).hidden = k !== view; });
   document.querySelectorAll('#mainTabs button').forEach(b => b.classList.toggle('on', b.dataset.go === view));
-  if (view !== 'home') setSub(view, sub || cur[view] || DEF[view]);
-  store.set('mz-view', view === 'home' ? 'home' : cur[view]);
+  if (DEF[view]) setSub(view, sub || cur[view] || DEF[view]);
+  store.set('mz-view', DEF[view] ? cur[view] : view);
   if (scroll) window.scrollTo(0, 0);
   refresh();
 }
