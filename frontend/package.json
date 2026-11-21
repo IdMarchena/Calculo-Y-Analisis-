@@ -1,0 +1,11 @@
+{
+  "name": "calculo-frontend",
+  "version": "1.0.0",
+  "description": "Frontend de la Monitoría de Cálculo (sitio estático).",
+  "private": true,
+  "author": "Iván Darío Marchena Salgado",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "node build.js"
+  }
+}

@@ -44,6 +44,6 @@ Ejemplo: `{"coef":[1,0,1],"a":0,"b":2}` calcula ∫₀² (1 + x²) dx = 14/3.
 1. En https://render.com elige *New → Blueprint* y conecta este repositorio (usa `render.yaml`).
 2. Si lo haces a mano: *New → Web Service*, Root Directory `backend`, Build `npm install`, Start `npm start`.
 
-**Opción B: separados**
-- **Frontend:** en Vercel o Netlify, importa el repositorio y pon como directorio raíz `frontend` (no necesita build).
-- **Backend:** en Render, como en la opción A. Configura `CORS_ORIGIN` con la URL del frontend.
+**Opción B: separados en Render**
+- **Frontend (Static Site):** Root Directory `frontend`, Build Command `npm run build`, Publish Directory `dist`.
+- **Backend (Blueprint):** usa `render.yaml`. Configura `CORS_ORIGIN` con la URL del frontend.
