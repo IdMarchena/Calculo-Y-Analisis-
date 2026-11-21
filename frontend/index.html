@@ -13,6 +13,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script>
+/* Reduce el tamaño de las fórmulas que no caben en el ancho disponible (celulares). */
+window.fitMath = function (root) {
+  root = root || document;
+  const items = [];
+  root.querySelectorAll('.katex').forEach(k => {
+    if (!k.offsetParent) return;
+    k.style.fontSize = '';
+    const disp = k.parentElement && k.parentElement.classList.contains('katex-display');
+    let box = disp ? k.parentElement : k.parentElement;
+    while (box && getComputedStyle(box).display.startsWith('inline')) box = box.parentElement;
+    if (box) items.push([k, box]);
+  });
+  const meas = items.map(([k, box]) => [k, k.scrollWidth, box.clientWidth - 4]);
+  meas.forEach(([k, w, avail]) => {
+    if (avail > 40 && w > avail) k.style.fontSize = (1.21 * Math.max(0.6, avail / w)).toFixed(3) + 'em';
+  });
+};
+(() => { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => fitMath(), 150); }); })();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -218,6 +238,38 @@ h3{font-size:15px;margin:20px 0 0;color:var(--accent);text-transform:uppercase;l
 .site-foot .fbrand{display:flex;align-items:center;gap:10px;font:700 17px "Poppins",sans-serif;color:#fff;margin-bottom:8px}
 .site-foot .fbrand .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center}
 .site-foot .k{color:#94a3c8;display:inline-block;min-width:92px}
+/* ---------- Responsivo: nada se sale de la pantalla ---------- */
+.grid2>*,.layout>*,.labgrid>*,.cards>*,.pj-grid>*,.pf-info>*,.mz>*,.sub>*{min-width:0}
+.katex-display{max-width:100%;overflow-x:auto;overflow-y:hidden}
+img,canvas,svg,video{max-width:100%}
+.zb{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:5}
+.zb button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 92%,transparent);color:var(--ink);font:700 20px/1 "Inter",sans-serif;cursor:pointer;box-shadow:0 4px 12px -6px #0006;display:grid;place-items:center;padding:0;touch-action:manipulation}
+.zb button:active{transform:scale(.94)}
+.plotwrap{position:relative}
+.plotwrap .zb{top:12px;transform:none}
+#viewer canvas,.viewer3 canvas{touch-action:none}
+nav button .pw{font-style:normal}
+@media (max-width:760px){
+  .topbar{position:static}
+  .tabs,.subtabs{flex-wrap:wrap;overflow-x:visible}
+  .tabs button,.subtabs button{flex:1 1 auto;white-space:normal;text-align:center}
+  .grid2,.layout,.labgrid{grid-template-columns:minmax(0,1fr)!important}
+  nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;overflow-x:visible!important}
+  nav button{min-width:0;padding:8px 4px!important;text-align:center;justify-content:center}
+  nav button .pw{display:none}
+  .card{padding:16px 14px}
+  .steps{padding-left:18px}
+  .steps li{overflow-wrap:anywhere}
+  table{font-size:13px}
+  th,td{padding:6px 7px!important;overflow-wrap:anywhere}
+  table.syntax,table.syntax tbody{display:block}
+  table.syntax tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  table.syntax th:nth-child(n+3),table.syntax td:nth-child(n+3){border-top:0}
+  .hero,.pf-hero{padding:24px 16px}
+  .hero h1{font-size:25px}
+  .plot{height:340px}
+  .zb button{width:42px;height:42px}
+}
 /* ---------- Perfil del creador ---------- */
 .pf-hero{margin-top:22px;border-radius:22px;background:var(--grad);color:#fff;padding:30px;display:grid;grid-template-columns:200px 1fr;gap:30px;align-items:center;position:relative;overflow:hidden;box-shadow:0 18px 40px -20px #4f46e5}
 .pf-hero::before{content:"</> { } ∫ λ";position:absolute;right:-6px;bottom:-22px;font:700 70px/1 "Poppins",sans-serif;opacity:.1;white-space:nowrap;pointer-events:none}
@@ -1090,10 +1142,28 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 2000);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+zoomBtns3(viewer, camera, controls, () => { need26 = true; });
 scene.add(new THREE.AmbientLight(0xffffff, 0.55));
 const dl = new THREE.DirectionalLight(0xffffff, 0.75); dl.position.set(5, 8, 10); scene.add(dl);
 const dl2 = new THREE.DirectionalLight(0xffffff, 0.3); dl2.position.set(-6, -4, -8); scene.add(dl2);
 
+function zoomBtns3(el, cam, ctl, onChange) {
+  const zb = document.createElement('div'); zb.className = 'zb';
+  zb.innerHTML = '<button type="button" aria-label="Acercar">+</button><button type="button" aria-label="Alejar">−</button>';
+  const z = k => { const off = cam.position.clone().sub(ctl.target), d = off.length() * k;
+    off.setLength(Math.min(ctl.maxDistance, Math.max(ctl.minDistance, d))); cam.position.copy(ctl.target.clone().add(off)); ctl.update(); onChange && onChange(); };
+  const [a, b] = zb.querySelectorAll('button'); a.onclick = () => z(1 / 1.25); b.onclick = () => z(1.25);
+  el.appendChild(zb);
+  // Pellizco con dos dedos (zoom táctil propio; un dedo sigue rotando con OrbitControls)
+  ctl.touches.TWO = -1;
+  const de = ctl.domElement, pts = new Map(); let pd = 0;
+  const dist2 = () => { const [p, q] = [...pts.values()]; return Math.hypot(p[0] - q[0], p[1] - q[1]); };
+  de.addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') return; pts.set(e.pointerId, [e.clientX, e.clientY]); if (pts.size === 2) pd = dist2(); });
+  de.addEventListener('pointermove', e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pts.size === 2 && pd) { const d = dist2(); if (d > 0) { z(pd / d); pd = d; } } });
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pd = 0; };
+  de.addEventListener('pointerup', up); de.addEventListener('pointercancel', up); de.addEventListener('pointerleave', up);
+}
 function label(txt, color) {
   const cv = document.createElement('canvas'); cv.width = cv.height = 64;
   const x = cv.getContext('2d'); x.fillStyle = color; x.font = 'bold 44px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(txt, 32, 34);
@@ -1107,7 +1177,7 @@ function line(pts, color) {
 
 let world = null, st = { th: 0, play: true, hold: 0 }, cur = 0, solidMesh, rectMesh, pivot, rectFaces, regionFace, staticRegion;
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const math = el => renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+const math = el => { renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); requestAnimationFrame(() => fitMath(el)); };
 
 function build(i) {
   cur = i; const p = P[i];
@@ -1252,7 +1322,7 @@ function setBg() { renderer.setClearColor(new THREE.Color(css('--canvas') || '#e
 /* ---------- UI ---------- */
 const nav = document.getElementById('nav'), tocProbs = document.getElementById('tocProbs');
 P.forEach((p, i) => {
-  const b = document.createElement('button'); b.innerHTML = `<span>Problema ${i + 1}</span><small>${p.m.split(' ')[0]}</small>`; b.onclick = () => build(i); nav.appendChild(b);
+  const b = document.createElement('button'); b.innerHTML = `<span><i class="pw">Problema </i>${i + 1}</span><small>${p.m.split(' ')[0]}</small>`; b.onclick = () => build(i); nav.appendChild(b);
   const li = document.createElement('li'); li.innerHTML = `<a href="#problemas" data-p="${i}">${i + 1} <b>· ${p.m.split(' ')[0]}</b></a>`; tocProbs.appendChild(li);
 });
 document.addEventListener('click', e => { const a = e.target.closest('a[data-p]'); if (a) build(+a.dataset.p); });
@@ -1280,7 +1350,7 @@ const $ = id => document.getElementById(id);
 const PI_ = Math.PI;
 const cssv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
-const tx = el => { try { renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); } catch (e) {} };
+const tx = el => { try { renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); requestAnimationFrame(() => fitMath(el)); } catch (e) {} };
 const plots = [], scenes = [];
 const markAll = () => scenes.forEach(o => { o.need = true; });
 ['input', 'change', 'click', 'keyup'].forEach(ev => document.addEventListener(ev, markAll, true));
@@ -1449,19 +1519,36 @@ class Plot {
   constructor(cv, draw) {
     this.cv = cv; this.ctx = cv.getContext('2d'); this.draw = draw;
     this.v = { x0: -5, x1: 5, y0: -5, y1: 5 }; this.equal = false; this.want = null; this.onPick = null; this.W = 1; this.H = 1;
-    let drag = null;
-    cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, v: { ...this.v }, moved: false }; try { cv.setPointerCapture(e.pointerId); } catch (_) {} });
+    let drag = null, pinch = null; const pts = new Map();
+    const pinchStart = () => { const [a, b] = [...pts.values()], r = cv.getBoundingClientRect();
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, v: { ...this.v }, px: ((a.x + b.x) / 2 - r.left) / r.width, py: ((a.y + b.y) / 2 - r.top) / r.height }; drag = null; };
+    cv.addEventListener('pointerdown', e => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+      if (pts.size === 2) pinchStart(); else if (pts.size === 1) drag = { x: e.clientX, y: e.clientY, v: { ...this.v }, moved: false };
+    });
     cv.addEventListener('pointermove', e => {
+      if (pts.has(e.pointerId)) pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch && pts.size >= 2) {
+        const [a, b] = [...pts.values()], r = cv.getBoundingClientRect(), k = pinch.d / (Math.hypot(a.x - b.x, a.y - b.y) || 1), v = pinch.v;
+        const wx = v.x0 + pinch.px * (v.x1 - v.x0), wy = v.y1 - pinch.py * (v.y1 - v.y0);
+        const nx = ((a.x + b.x) / 2 - r.left) / r.width, ny = ((a.y + b.y) / 2 - r.top) / r.height, W2 = (v.x1 - v.x0) * k, H2 = (v.y1 - v.y0) * k;
+        this.v = { x0: wx - nx * W2, x1: wx + (1 - nx) * W2, y1: wy + ny * H2, y0: wy - (1 - ny) * H2 }; this.render(); return;
+      }
       if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (!drag.moved && Math.hypot(dx, dy) < 4) return; drag.moved = true; cv.style.cursor = 'grabbing';
       const sx = (drag.v.x1 - drag.v.x0) / this.W, sy = (drag.v.y1 - drag.v.y0) / this.H;
       this.v = { x0: drag.v.x0 - dx * sx, x1: drag.v.x1 - dx * sx, y0: drag.v.y0 + dy * sy, y1: drag.v.y1 + dy * sy }; this.render();
     });
     cv.addEventListener('pointerup', e => {
+      pts.delete(e.pointerId);
+      if (pinch) { if (pts.size < 2) pinch = null; drag = null; return; }
       if (drag && !drag.moved && this.onPick) { const r = cv.getBoundingClientRect(); this.onPick(this.v.x0 + (e.clientX - r.left) / r.width * (this.v.x1 - this.v.x0)); }
       drag = null; cv.style.cursor = '';
     });
-    cv.addEventListener('pointercancel', () => { drag = null; cv.style.cursor = ''; });
+    cv.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; drag = null; cv.style.cursor = ''; });
+    const wrap = document.createElement('div'); wrap.className = 'plotwrap'; cv.parentNode.insertBefore(wrap, cv); wrap.appendChild(cv);
+    const zb = document.createElement('div'); zb.className = 'zb'; zb.innerHTML = '<button type="button" aria-label="Acercar">+</button><button type="button" aria-label="Alejar">−</button><button type="button" aria-label="Restablecer vista" style="font-size:16px">⟲</button>'; wrap.appendChild(zb);
+    const [zi, zo, zr] = zb.querySelectorAll('button'); zi.onclick = () => this.zoom(1 / 1.35); zo.onclick = () => this.zoom(1.35); zr.onclick = () => { if (this.home) { this.want = { ...this.home }; this.render(); } };
     cv.addEventListener('wheel', e => {
       e.preventDefault(); const r = cv.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height, v = this.v;
       const wx = v.x0 + px * (v.x1 - v.x0), wy = v.y1 - py * (v.y1 - v.y0), k = e.deltaY > 0 ? 1.15 : 1 / 1.15;
@@ -1470,7 +1557,8 @@ class Plot {
     if (window.ResizeObserver) new ResizeObserver(() => this.render()).observe(cv);
     plots.push(this);
   }
-  fit(xa, xb, ya, yb) { this.want = { xa, xb, ya, yb }; this.render(); }
+  fit(xa, xb, ya, yb) { this.want = { xa, xb, ya, yb }; this.home = { ...this.want }; this.render(); }
+  zoom(k) { const v = this.v, cx = (v.x0 + v.x1) / 2, cy = (v.y0 + v.y1) / 2; this.v = { x0: cx + (v.x0 - cx) * k, x1: cx + (v.x1 - cx) * k, y0: cy + (v.y0 - cy) * k, y1: cy + (v.y1 - cy) * k }; this.render(); }
   size() {
     const r = this.cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 1.5);
     const W = Math.max(1, Math.round(r.width * d)), H = Math.max(1, Math.round(r.height * d));
@@ -1670,6 +1758,7 @@ function scene3(el) {
   const r = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' }); r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); el.prepend(r.domElement);
   const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(45, 1, 0.01, 5000), ctl = new THREE.OrbitControls(cam, r.domElement);
   ctl.enableDamping = true;
+  zoomBtns3(el, cam, ctl, () => { o.need = true; });
   sc.add(new THREE.AmbientLight(0xffffff, 0.55));
   const d1 = new THREE.DirectionalLight(0xffffff, 0.75); d1.position.set(5, 8, 10); sc.add(d1);
   const d2 = new THREE.DirectionalLight(0xffffff, 0.3); d2.position.set(-6, -4, -8); sc.add(d2);
@@ -2170,7 +2259,7 @@ function ensure(sub) {
 function refresh() {
   requestAnimationFrame(() => {
     if (!$('int-solidos').hidden && !$('view-int').hidden) { try { resize(); } catch (e) {} }
-    plots.forEach(p => p.render()); scenes.forEach(s => s.size());
+    plots.forEach(p => p.render()); scenes.forEach(s => s.size()); fitMath();
   });
 }
 function setSub(view, sub) {
