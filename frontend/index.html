@@ -144,7 +144,7 @@ h3{font-size:15px;margin:20px 0 0;color:var(--accent);text-transform:uppercase;l
   #viewer{height:340px}
 }
 /* ===================== MONITORÍA: navegación y laboratorios ===================== */
-.topbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar{position:sticky;top:0;z-index:60;background:var(--card);border-bottom:1px solid var(--line)}
 .topbar::after{content:"";display:block;height:3px;background:var(--grad)}
 .topbar .in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .brand{font-weight:700;font-size:16px;margin-right:auto;display:flex;align-items:center;gap:8px}
@@ -218,6 +218,12 @@ h3{font-size:15px;margin:20px 0 0;color:var(--accent);text-transform:uppercase;l
 .site-foot .fbrand{display:flex;align-items:center;gap:10px;font:700 17px "Poppins",sans-serif;color:#fff;margin-bottom:8px}
 .site-foot .fbrand .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center}
 .site-foot .k{color:#94a3c8;display:inline-block;min-width:92px}
+.site-foot .social{display:flex;gap:12px;margin-top:14px}
+.site-foot .social a{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;transition:transform .15s}
+.site-foot .social a:hover{transform:translateY(-2px);text-decoration:none}
+.site-foot .social svg{width:22px;height:22px;fill:currentColor}
+.site-foot .social .ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%)}
+.site-foot .social .fb{background:#1877f2}
 .site-foot .legal{border-top:1px solid #ffffff1a;max-width:1200px;margin:0 auto;padding:14px 16px 22px;font-size:13px;color:#aab3d1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
 @media (max-width:760px){.site-foot .in{grid-template-columns:1fr}}
 @media (max-width:860px){
@@ -960,8 +966,12 @@ function sweep(p, polys, colors) {
 
 /* ---------- escena ---------- */
 const viewer = document.getElementById('viewer');
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+let need26 = true, vis26 = true, key26 = '', volCache = { k: '', v: 0 };
+const mark26 = () => { need26 = true; };
+['input', 'change', 'click', 'keyup'].forEach(ev => document.addEventListener(ev, mark26, true));
+if (window.IntersectionObserver) new IntersectionObserver(es => { vis26 = es[0].isIntersecting; if (vis26) need26 = true; }).observe(document.getElementById('viewer'));
 viewer.prepend(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 2000);
@@ -1101,25 +1111,30 @@ function applyVis() {
 const hud = document.getElementById('hud'), angEl = document.getElementById('ang');
 let last = performance.now();
 function frame(t) {
+  requestAnimationFrame(frame);
   const dt = Math.min(0.05, (t - last) / 1000); last = t;
+  if (!vis26 || !viewer.offsetParent || document.hidden) return;   // fuera de pantalla: no se dibuja
   if (st.play) {
     if (st.th >= 2 * PI) { st.hold += dt; if (st.hold > 1.6) { st.th = 0; st.hold = 0; } }
     else st.th = Math.min(2 * PI, st.th + dt * (+document.getElementById('spd').value) * PI / 180);
     angEl.value = Math.round(st.th * 180 / PI);
   }
-  const steps = Math.round(st.th / (2 * PI) * M);
-  if (solidMesh) {
+  const steps = Math.round(st.th / (2 * PI) * M), nR = +document.getElementById('nrect').value;
+  const k26 = cur + '|' + steps + '|' + nR + '|' + (solidMesh && solidMesh.id) + '|' + (rectMesh && rectMesh.id);
+  if (solidMesh && k26 !== key26) {
+    key26 = k26; need26 = true;
     solidMesh.geometry.setDrawRange(0, steps * solidMesh.geometry.userData.perStep);
     rectMesh.geometry.setDrawRange(0, steps * rectMesh.geometry.userData.perStep);
     const th = steps / M * 2 * PI;
     if (P[cur].ax.t === 'x') pivot.rotation.set(th, 0, 0); else pivot.rotation.set(0, th, 0);
-    const p = P[cur], vol = numeric(p, +document.getElementById('nrect').value) * (th / (2 * PI));
+    const p = P[cur], vk = cur + '|' + nR; if (volCache.k !== vk) volCache = { k: vk, v: numeric(p, nR) };
+    const vol = volCache.v * (th / (2 * PI));
     hud.innerHTML = `θ = ${Math.round(th * 180 / PI)}°<br>${p.m}<br>V barrido ≈ ${vol.toFixed(3)} u³`;
   }
-  controls.update(); renderer.render(scene, camera); requestAnimationFrame(frame);
+  if (controls.update() || need26) { need26 = false; renderer.render(scene, camera); }
 }
-function resize() { const w = viewer.clientWidth, h = viewer.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-function setBg() { renderer.setClearColor(new THREE.Color(css('--canvas') || '#eef0f4')); }
+function resize() { const w = viewer.clientWidth, h = viewer.clientHeight; if (!w || !h) return; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); need26 = true; }
+function setBg() { renderer.setClearColor(new THREE.Color(css('--canvas') || '#eef0f4')); need26 = true; }
 
 /* ---------- UI ---------- */
 const nav = document.getElementById('nav'), tocProbs = document.getElementById('tocProbs');
@@ -1138,7 +1153,7 @@ document.getElementById('themeBtn').onclick = () => {
   const r = document.documentElement, dark = matchMedia('(prefers-color-scheme: dark)').matches;
   const curT = r.dataset.theme || (dark ? 'dark' : 'light'); r.dataset.theme = curT === 'dark' ? 'light' : 'dark'; setBg(); };
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setBg);
-addEventListener('resize', resize);
+let rz26 = 0; addEventListener('resize', () => { cancelAnimationFrame(rz26); rz26 = requestAnimationFrame(resize); });
 
 math(document.querySelector('.wrap'));
 resize(); setBg(); build(0); requestAnimationFrame(frame);
@@ -1154,6 +1169,14 @@ const cssv = v => getComputedStyle(document.documentElement).getPropertyValue(v)
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 const tx = el => { try { renderMathInElement(el, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); } catch (e) {} };
 const plots = [], scenes = [];
+const markAll = () => scenes.forEach(o => { o.need = true; });
+['input', 'change', 'click', 'keyup'].forEach(ev => document.addEventListener(ev, markAll, true));
+// Limita la composición de fórmulas (KaTeX) mientras se arrastra un deslizador: inmediata y luego cada ~200 ms
+const lazy = (() => { const m = new WeakMap(); return (el, fn) => {
+  let s = m.get(el); if (!s) { s = { last: 0, t: 0 }; m.set(el, s); }
+  clearTimeout(s.t); const now = performance.now();
+  if (now - s.last > 200) { s.last = now; fn(); } else s.t = setTimeout(() => { s.last = performance.now(); fn(); }, 160);
+}; })();
 const MJ = window.math;
 const HAS_MATH = !!(MJ && typeof MJ.parse === 'function');
 
@@ -1336,7 +1359,7 @@ class Plot {
   }
   fit(xa, xb, ya, yb) { this.want = { xa, xb, ya, yb }; this.render(); }
   size() {
-    const r = this.cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+    const r = this.cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 1.5);
     const W = Math.max(1, Math.round(r.width * d)), H = Math.max(1, Math.round(r.height * d));
     if (this.cv.width !== W || this.cv.height !== H) { this.cv.width = W; this.cv.height = H; }
     this.d = d; this.W = Math.max(1, r.width); this.H = Math.max(1, r.height);
@@ -1350,7 +1373,8 @@ class Plot {
   }
   X(x) { return (x - this.v.x0) / (this.v.x1 - this.v.x0) * this.W; }
   Y(y) { return (this.v.y1 - y) / (this.v.y1 - this.v.y0) * this.H; }
-  render() {
+  render() { if (this._q) return; this._q = requestAnimationFrame(() => { this._q = 0; this.paint(); }); }
+  paint() {
     if (!this.cv.isConnected || this.cv.offsetParent === null) return;
     this.size(); if (this.want) this.applyWant();
     const c = this.ctx; c.setTransform(this.d, 0, 0, this.d, 0, 0);
@@ -1411,8 +1435,8 @@ class Plot {
 }
 const COL = { f: '#d9861a', g: '#8b5cf6', rectF: 'rgba(56,199,147,.30)', rectS: '#1f8a5e', reg: 'rgba(242,169,59,.32)', neg: 'rgba(229,72,77,.22)', tan: '#2f6fde', nor: '#e5484d', sec: '#7a7f88', der: '#8b5cf6', ok: '#1f8a4c' };
 const fixLt = h => h.replace(/\$\$[\s\S]*?\$\$|\$[^$]*\$/g, m => m.replace(/</g, '\\lt ').replace(/>/g, '\\gt '));
-function stepsHTML(el, T) { el.innerHTML = T.map(([t, s]) => '<li><b class="lab">' + t + '.</b> ' + fixLt(s) + '</li>').join(''); tx(el); }
-function setRes(el, html) { el.innerHTML = fixLt(html); tx(el); }
+function stepsHTML(el, T) { lazy(el, () => { el.innerHTML = T.map(([t, s]) => '<li><b class="lab">' + t + '.</b> ' + fixLt(s) + '</li>').join(''); tx(el); }); }
+function setRes(el, html) { lazy(el, () => { el.innerHTML = fixLt(html); tx(el); }); }
 function robustRange(vals) { const v = vals.filter(isFinite).sort((p, q) => p - q); if (!v.length) return [-1, 1]; const k = Math.floor(v.length * 0.02); return [v[k], v[v.length - 1 - k]]; }
 
 /* =============================================================
@@ -1530,17 +1554,18 @@ function areaLab(P, between) {
    ESCENAS 3D (reutilizan el motor del Ejercicio 26)
    ============================================================= */
 function scene3(el) {
-  const r = new THREE.WebGLRenderer({ antialias: true }); r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); el.prepend(r.domElement);
+  const r = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' }); r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); el.prepend(r.domElement);
   const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(45, 1, 0.01, 5000), ctl = new THREE.OrbitControls(cam, r.domElement);
   ctl.enableDamping = true;
   sc.add(new THREE.AmbientLight(0xffffff, 0.55));
   const d1 = new THREE.DirectionalLight(0xffffff, 0.75); d1.position.set(5, 8, 10); sc.add(d1);
   const d2 = new THREE.DirectionalLight(0xffffff, 0.3); d2.position.set(-6, -4, -8); sc.add(d2);
-  const o = { r, sc, cam, ctl, el, tick: null,
-    size() { const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return; r.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); },
-    bg() { r.setClearColor(new THREE.Color(cssv('--canvas') || '#eef0f4')); },
+  const o = { r, sc, cam, ctl, el, tick: null, need: true, vis: true, W: 0, H: 0,
+    size() { const w = el.clientWidth, h = el.clientHeight; if (!w || !h || (w === o.W && h === o.H)) return; o.W = w; o.H = h; r.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); o.need = true; },
+    bg() { r.setClearColor(new THREE.Color(cssv('--canvas') || '#eef0f4')); o.need = true; },
     look(ctr, L, dir = [0.75, 0.55, 1.35]) { ctl.target.copy(ctr); cam.position.copy(ctr.clone().add(new THREE.Vector3(...dir).multiplyScalar(L))); cam.near = L / 300; cam.far = L * 80; cam.updateProjectionMatrix(); } };
   if (window.ResizeObserver) new ResizeObserver(() => o.size()).observe(el);
+  if (window.IntersectionObserver) new IntersectionObserver(es => { o.vis = es[0].isIntersecting; if (o.vis) o.need = true; }).observe(el);
   o.bg(); o.size(); scenes.push(o); return o;
 }
 function disposeGroup(g) { g.traverse(q => { if (q.geometry) q.geometry.dispose(); if (q.material && q.material.userData && q.material.userData.own) q.material.dispose(); }); }
@@ -1663,18 +1688,21 @@ function solidLab() {
     const pt = piTex(V);
     setRes($('s3-res'), 'Resultado: $V' + (pt ? '=' + pt + '\\approx ' + nf(V, 4) : show(V)) + '\\ u^3$');
   }
+  let lastK = '';
   o.tick = dt => {
-    if (!st.p) return;
+    if (!st.p) return false;
     if (st.play) {
       if (st.th >= 2 * PI_) { st.hold += dt; if (st.hold > 1.6) { st.th = 0; st.hold = 0; } }
       else st.th = Math.min(2 * PI_, st.th + dt * 60 * PI_ / 180);
       $('s3-ang').value = Math.round(st.th * 180 / PI_);
     }
-    const k = Math.round(st.th / (2 * PI_) * M), th = k / M * 2 * PI_;
+    const k = Math.round(st.th / (2 * PI_) * M), th = k / M * 2 * PI_, nn = +$('s3-n').value, kk = k + '|' + nn + '|' + st.solid.id + '|' + st.rect.id;
+    if (kk === lastK) return false; lastK = kk;
     st.solid.geometry.setDrawRange(0, k * st.solid.geometry.userData.perStep);
     st.rect.geometry.setDrawRange(0, k * st.rect.geometry.userData.perStep);
     if (st.p.ax.t === 'x') st.pivot.rotation.set(th, 0, 0); else st.pivot.rotation.set(0, th, 0);
-    $('s3-hud').innerHTML = 'θ = ' + Math.round(th * 180 / PI_) + '°<br>' + st.m + '<br>V barrido ≈ ' + (riem(+$('s3-n').value) * th / (2 * PI_)).toFixed(3) + ' u³';
+    $('s3-hud').innerHTML = 'θ = ' + Math.round(th * 180 / PI_) + '°<br>' + st.m + '<br>V barrido ≈ ' + (riem(nn) * th / (2 * PI_)).toFixed(3) + ' u³';
+    return true;
   };
   const play = $('s3-play');
   play.onclick = () => { st.play = !st.play; play.textContent = st.play ? '⏸ Pausa' : '▶ Animar'; if (st.play && st.th >= 2 * PI_) st.th = 0; };
@@ -1961,11 +1989,12 @@ function optLab() {
   }
   function tween(x, t, state) { OP.anim = { x0: OP.x, t0: OP.t, x1: x, t1: t, s: performance.now(), dur: 1500, state }; OP.state = state; }
   o.tick = () => {
-    if (!OP.anim) return;
+    if (!OP.anim) return false;
     const A = OP.anim, k = Math.min(1, (performance.now() - A.s) / A.dur), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
     const tt = OP.M.sheet ? (A.t1 > A.t0 ? Math.max(0, Math.min(1, (e - 0.35) / 0.65)) * (A.t1 - A.t0) + A.t0 : A.t0 + (A.t1 - A.t0) * Math.min(1, e / 0.65)) : A.t1;
     setState(A.x0 + (A.x1 - A.x0) * e, tt, A.state);
     if (k >= 1) OP.anim = null;
+    return true;
   };
   function drawV(pl) {
     if (!OP.M) return; const { lo, hi, V } = OP;
@@ -2063,9 +2092,14 @@ new MutationObserver(onTheme).observe(document.documentElement, { attributes: tr
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', onTheme);
 let last = performance.now();
 function loop(t) {
-  const dt = Math.min(0.05, (t - last) / 1000); last = t;
-  scenes.forEach(o => { if (!o.el.offsetParent) return; try { if (o.tick) o.tick(dt, t); } catch (e) { console.error(e); } o.ctl.update(); o.r.render(o.sc, o.cam); });
   requestAnimationFrame(loop);
+  const dt = Math.min(0.05, (t - last) / 1000); last = t;
+  if (document.hidden) return;
+  scenes.forEach(o => {
+    if (!o.vis || !o.el.offsetParent) return;          // pestaña oculta o fuera de pantalla: no se dibuja
+    let ch = false; try { if (o.tick) ch = o.tick(dt, t) !== false; } catch (e) { console.error(e); }
+    if (o.ctl.update() || ch || o.need) { o.need = false; o.r.render(o.sc, o.cam); }
+  });
 }
 ['view-home', 'view-dif', 'int-area', 'int-entre', 'int-solido'].forEach(id => tx($(id)));
 let q = null; try { q = new URLSearchParams(location.search).get('vista'); } catch (e) {}
@@ -2080,6 +2114,10 @@ requestAnimationFrame(loop);
     <div>
       <div class="fbrand"><span class="logo">∫</span> Monitoría de Cálculo</div>
       <p>Material académico de Cálculo Diferencial e Integral: fundamentos teóricos, ejercicios resueltos y simuladores interactivos en 2D y 3D.</p>
+      <div class="social">
+        <a class="ig" href="https://www.instagram.com/ivann_ots/" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Iván Marchena" title="Instagram · @ivann_ots"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1.1.4 2.2.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1.1.4-2.2.4-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1.1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1.1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.3.8-.4.4-.6.8-.8 1.3-.1.4-.3 1-.4 2.1C2.6 9.9 2.6 10.3 2.6 12s0 2.1.1 3.3c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.3.4.4.8.6 1.3.8.4.1 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.3-.8.4-.4.6-.8.8-1.3.1-.4.3-1 .4-2.1.1-1.2.1-1.6.1-3.3s0-2.1-.1-3.3c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.3-.4-.4-.8-.6-1.3-.8-.4-.1-1-.3-2.1-.4C15.5 4 15.1 4 12 4zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 8.1a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zm6.2-8.3a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0z"/></svg></a>
+        <a class="fb" href="https://www.facebook.com/ivann_ots" target="_blank" rel="noopener noreferrer" aria-label="Facebook de Iván Marchena" title="Facebook · ivann_ots"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21.9v-8.1h2.7l.4-3.2h-3.1V8.6c0-.9.3-1.5 1.6-1.5h1.7V4.2c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.3H7.4v3.2h2.8v8.1h3.3z"/></svg></a>
+      </div>
     </div>
     <div>
       <h4>Autor</h4>
