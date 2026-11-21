@@ -64,11 +64,17 @@ api.post('/integrar', (req, res) => {
 app.use('/api', api);
 app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 
-/* ---------------- Frontend ---------------- */
-app.use(express.static(FRONTEND_DIR, {
-  extensions: ['html'],
-  setHeaders: (res, file) => { if (file.endsWith('sw.js')) res.setHeader('Cache-Control', 'no-cache'); }
-}));
-app.get('*', (req, res) => res.sendFile(path.join(FRONTEND_DIR, 'index.html')));
+/* ---------------- Frontend (opcional) ---------------- */
+// Si la carpeta del frontend existe (ejecución local), se sirve también; en Render el frontend va como Static Site.
+const fs = require('fs');
+if (fs.existsSync(path.join(FRONTEND_DIR, 'index.html'))) {
+  app.use(express.static(FRONTEND_DIR, {
+    extensions: ['html'],
+    setHeaders: (res, file) => { if (file.endsWith('sw.js')) res.setHeader('Cache-Control', 'no-cache'); }
+  }));
+  app.get('*', (req, res) => res.sendFile(path.join(FRONTEND_DIR, 'index.html')));
+} else {
+  app.get('/', (req, res) => res.json({ servicio: 'API Monitoría de Cálculo', rutas: ['/api/health', '/api/autor', '/api/temas', 'POST /api/integrar'] }));
+}
 
 app.listen(PORT, () => console.log(`Servidor listo en http://localhost:${PORT}`));
